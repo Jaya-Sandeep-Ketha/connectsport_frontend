@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../../Components/common/navbar"; // Ensure correct import path
 import PostList from "./postList"; // Ensure correct import path
 import PostForm from "./postForm"; // Ensure correct import path
-import SearchComponent from "../../Components/common/searchComponent"; 
+import SearchComponent from "../../Components/common/searchComponent";
 
 function HomePage() {
   const navigate = useNavigate();
@@ -45,9 +45,12 @@ function HomePage() {
     navigate("/login");
   };
 
-  const addNewPost = async (content, imageFile) => {
+  const addNewPost = async (content, imageFile, tag) => {
+    console.log("Received for posting:", { content, imageFile, tag });
     const formData = new FormData();
-    formData.append("content", content);
+    //    formData.append("content", content);
+    formData.append("content", content.toString()); // Convert to string to ensure no object is passed
+    formData.append("tag", tag); // 'tag' should already be a string based on your form
     formData.append("author", currentUser || "Anonymous"); // Ensure this is correctly set based on your state
     if (imageFile) {
       formData.append("image", imageFile); // Only add if image is selected
@@ -132,18 +135,19 @@ function HomePage() {
         onLogout={handleLogout}
         onSearchChange={setSearchInput} // Pass setSearchInput as a prop
       />
-      {searchInput && <SearchComponent />} 
+      {searchInput && <SearchComponent />}
       <div className="row">
-        <div className="col-md-3">
-          {/* Left sidebar content */}
-        </div>
+        <div className="col-md-3">{/* Left sidebar content */}</div>
         <div className="col-md-6">
           <PostForm onPostSubmit={addNewPost} onPollSubmit={addNewPoll} />
-          <PostList posts={posts} currentUser={currentUser} onDeletePost={deletePost} onVote={handleVote} />
+          <PostList
+            posts={posts}
+            currentUser={currentUser}
+            onDeletePost={deletePost}
+            onVote={handleVote}
+          />
         </div>
-        <div className="col-md-3">
-          {/* Right sidebar content */}
-        </div>
+        <div className="col-md-3">{/* Right sidebar content */}</div>
       </div>
     </div>
   );

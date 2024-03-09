@@ -1,13 +1,21 @@
-import React, { useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileUpload, faPoll, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
+import React, { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faFileUpload,
+  faPoll,
+  faPlus,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 
 function PostForm({ onPostSubmit, onPollSubmit }) {
-  const [content, setContent] = useState('');
+  const [content, setContent] = useState("");
   const [media, setMedia] = useState(null);
   const [showPollCreator, setShowPollCreator] = useState(false);
-  const [pollQuestion, setPollQuestion] = useState('');
-  const [pollOptions, setPollOptions] = useState(['', '']);
+  const [pollQuestion, setPollQuestion] = useState("");
+  const [pollOptions, setPollOptions] = useState(["", ""]);
+  const [selectedSport, setSelectedSport] = useState(""); // Sport selection state
+
+  const sports = ["Soccer", "Basketball", "Tennis", "Baseball", "Cycling"]; // List of sports
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -17,30 +25,55 @@ function PostForm({ onPostSubmit, onPollSubmit }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (showPollCreator) {
-      if (!pollQuestion.trim() || pollOptions.some(option => !option.trim())) return;
-      onPollSubmit({ question: pollQuestion, options: pollOptions.filter(option => option.trim()) }); // Filter out empty options
-      setShowPollCreator(false); // Reset poll creator view
-      setPollQuestion('');
-      setPollOptions(['', '']);
+      if (!pollQuestion.trim() || pollOptions.some((option) => !option.trim()))
+        return;
+      onPollSubmit({
+        question: pollQuestion,
+        options: pollOptions.filter((option) => option.trim()),
+      });
+      setShowPollCreator(false);
+      setPollQuestion("");
+      setPollOptions(["", ""]);
     } else {
       if (!content.trim() && !media) return;
-      onPostSubmit(content, media);
-      setContent('');
+      console.log({
+        content,
+        media,
+        tag: selectedSport || "No Sport Selected",
+      }); // Log the data being submitted
+      onPostSubmit({
+        content,
+        media,
+        tag: selectedSport || "No Sport Selected", // Ensure it's a string
+      });
+      setContent("");
       setMedia(null);
+      setSelectedSport(""); // Reset the sport selection
     }
   };
 
   const addPollOption = () => {
-    setPollOptions([...pollOptions, '']);
+    setPollOptions([...pollOptions, ""]);
   };
 
   const removePollOption = (indexToRemove) => {
     setPollOptions(pollOptions.filter((_, index) => index !== indexToRemove));
   };
 
-
   return (
     <form onSubmit={handleSubmit} style={formStyle}>
+      <select
+        value={selectedSport}
+        onChange={(e) => setSelectedSport(e.target.value)}
+        style={inputStyle}
+      >
+        <option value="">Select a Sport</option>
+        {sports.map((sport) => (
+          <option key={sport} value={sport}>
+            {sport}
+          </option>
+        ))}
+      </select>
       <textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
@@ -50,9 +83,16 @@ function PostForm({ onPostSubmit, onPollSubmit }) {
 
       <div style={buttonsContainerStyle}>
         {!showPollCreator && (
-          <label style={{ ...fileInputLabelStyle, flexGrow: 1, marginRight: '8px', justifyContent: 'center' }}>
+          <label
+            style={{
+              ...fileInputLabelStyle,
+              flexGrow: 1,
+              marginRight: "8px",
+              justifyContent: "center",
+            }}
+          >
             <FontAwesomeIcon icon={faFileUpload} style={iconStyle} />
-            <span style={{ marginLeft: '8px' }}>Upload Image/Video</span>
+            <span style={{ marginLeft: "8px" }}>Upload Image/Video</span>
             <input
               type="file"
               accept="image/*,video/*"
@@ -65,9 +105,15 @@ function PostForm({ onPostSubmit, onPollSubmit }) {
         <button
           type="button"
           onClick={() => setShowPollCreator(!showPollCreator)}
-          style={{ ...buttonStyle, width: showPollCreator ? '100%' : '49%' }}
+          style={{ ...buttonStyle, width: showPollCreator ? "100%" : "49%" }}
         >
-          {showPollCreator ? 'Back to Post' : <><FontAwesomeIcon icon={faPoll} style={iconStyle} /> Create Poll</>}
+          {showPollCreator ? (
+            "Back to Post"
+          ) : (
+            <>
+              <FontAwesomeIcon icon={faPoll} style={iconStyle} /> Create Poll
+            </>
+          )}
         </button>
       </div>
 
@@ -81,7 +127,14 @@ function PostForm({ onPostSubmit, onPollSubmit }) {
             style={inputStyle}
           />
           {pollOptions.map((option, index) => (
-            <div key={index} style={{ display: 'flex', alignItems: 'center', marginTop: '10px' }}>
+            <div
+              key={index}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginTop: "10px",
+              }}
+            >
               <input
                 type="text"
                 value={option}
@@ -96,14 +149,21 @@ function PostForm({ onPostSubmit, onPollSubmit }) {
               {pollOptions.length > 2 && (
                 <button
                   onClick={() => removePollOption(index)}
-                  style={{ ...buttonStyle, marginLeft: '10px', backgroundColor: '#dc3545' }}
+                  style={{
+                    ...buttonStyle,
+                    marginLeft: "10px",
+                    backgroundColor: "#dc3545",
+                  }}
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
               )}
             </div>
           ))}
-          <button onClick={addPollOption} style={{ ...buttonStyle, marginTop: '10px' }}>
+          <button
+            onClick={addPollOption}
+            style={{ ...buttonStyle, marginTop: "10px" }}
+          >
             <FontAwesomeIcon icon={faPlus} /> Add Option
           </button>
         </>
@@ -184,28 +244,28 @@ const buttonStyle = {
 };
 
 const buttonsContainerStyle = {
-  display: 'flex',
-  justifyContent: 'space-between', // Spread the buttons across the container
-  marginTop: '10px',
+  display: "flex",
+  justifyContent: "space-between", // Spread the buttons across the container
+  marginTop: "10px",
 };
 
 // Update the buttonStyle to match the modern look of the buttons in the image
 const updatedButtonStyle = {
-  backgroundColor: '#007bff', // Example: a blue background
-  color: 'white',
-  padding: '10px 15px',
-  border: 'none',
-  borderRadius: '5px',
-  cursor: 'pointer',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  fontSize: '16px',
-  width: '48%', // Set width to occupy half of the container minus a little for margin
+  backgroundColor: "#007bff", // Example: a blue background
+  color: "white",
+  padding: "10px 15px",
+  border: "none",
+  borderRadius: "5px",
+  cursor: "pointer",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  fontSize: "16px",
+  width: "48%", // Set width to occupy half of the container minus a little for margin
 };
 
 // Ensure the FontAwesomeIcon is styled to match the button text
 const iconStyle = {
-  marginRight: '5px', // Adds some space between the icon and the label
+  marginRight: "5px", // Adds some space between the icon and the label
 };
 export default PostForm;
