@@ -1,27 +1,21 @@
 .settings-container {
-    background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
-    border-radius: 15px; /* Rounded corners */
-    padding: 20px; /* Padding around the form */
-    max-width: 800px; /* Set a max-width for the form container and center it */
-    margin: auto;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
-
-    animation: showSignInForm 0.5s ease-out forwards;
+  background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+  border-radius: 15px;
+  padding: 40px; /* Increased padding for better spacing */
+  max-width: 800px;
+  margin: auto;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Increased box shadow for depth */
+  z-index: 1;
+  position: relative; /* Ensure stacking context */
 }
 
-      .settings__wrapper {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        width: 100vw;
-        height: 100vh;
-        background-position: center center;
-        background-repeat: no-repeat;
-        background-size: cover;
-        position: relative;
-      }
-
+.settings__wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
       @keyframes showSignInForm {
         0%,
         30% {
