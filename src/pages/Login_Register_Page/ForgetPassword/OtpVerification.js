@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Form, Button, Alert, Row, Col } from "react-bootstrap";
 import axios from "axios";
-import ReusableForm from "../../../Components/common/reusableForm";
+import ReusableForm from "../../../Components/ui/reusableForm";
 
 const OtpVerificationComponent = ({ onVerifyOtp, token }) => { // Assuming token is passed as a prop
   const [otp, setOtp] = useState("");

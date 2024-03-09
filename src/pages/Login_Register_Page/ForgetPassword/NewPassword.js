@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Form, Button, Alert } from "react-bootstrap";
 import axios from 'axios'; // Ensure axios is installed for HTTP requests
-import ReusableForm from "../../../Components/common/reusableForm";
+import ReusableForm from "../../../Components/ui/reusableForm";
 
 const NewPasswordComponent = ({ token, onChangePassword }) => {
   const [password, setPassword] = useState("");

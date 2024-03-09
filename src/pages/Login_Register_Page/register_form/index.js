@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Form, Button, Container, Col, Row } from "react-bootstrap";
-import BackgroundImage from "../../assets/images/background.jpg";
-import "../../Styles/Login_Register_Page/RegisterForm.css";
-import Footer from "../../Components/common/footer";
-import ReusableForm from "../../Components/common/reusableForm.js";
+import BackgroundImage from "../../../assets/images/background.jpg";
+import "../../../Styles/Login_Register_Page/RegisterForm.css";
+import Footer from "../../../Components/layout/footer.js";
+import ReusableForm from "../../../Components/ui/reusableForm.js";
 
 const RegistrationPage = () => {
   const navigate = useNavigate();

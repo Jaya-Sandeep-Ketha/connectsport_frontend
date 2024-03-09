@@ -1,5 +1,5 @@
 import React from 'react';
-import IconButton from './iconButton'; // Ensure this is the correct path
+import IconButton from '../ui/iconButton'; // Ensure this is the correct path
 
 const SocialButtons = ({ onLike, likesCount, onCommentToggle, commentsCount }) => {
   return (

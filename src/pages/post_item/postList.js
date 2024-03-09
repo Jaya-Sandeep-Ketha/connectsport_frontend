@@ -1,6 +1,6 @@
 import React from 'react';
 import Post from './post'; // Ensure correct import path
-import PollDisplay from './pollDisplay'; // Ensure correct import path
+import PollDisplay from '../poll_item'; // Ensure correct import path
 
 // Enhanced PostList component to handle both regular posts and polls
 function PostList({ posts, currentUser, onVote }) {

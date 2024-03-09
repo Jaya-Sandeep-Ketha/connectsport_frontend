@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import Navbar from "../../Components/common/navbar"; // Ensure correct import path
-import PostList from "./postList"; // Ensure correct import path
-import PostForm from "./postForm"; // Ensure correct import path
-import SearchComponent from "../../Components/common/searchComponent";
+import Navbar from "../../Components/layout/navbar"; // Ensure correct import path
+import PostList from "../post_item/postList"; // Ensure correct import path
+import PostForm from "../post_item/postForm"; // Ensure correct import path
+import SearchComponent from "../../Components/common/searchComponent"; 
 
 function HomePage() {
   const navigate = useNavigate();

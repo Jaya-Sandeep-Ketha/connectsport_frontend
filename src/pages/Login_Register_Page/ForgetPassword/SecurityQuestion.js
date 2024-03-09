@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Form, Button, Alert } from "react-bootstrap";
 import axios from "axios";
-import ReusableForm from "../../../Components/common/reusableForm";
+import ReusableForm from "../../../Components/ui/reusableForm";
 
 const SecurityQuestionsComponent = ({ token, onVerifyAnswers }) => {
   // Token is now passed as a prop

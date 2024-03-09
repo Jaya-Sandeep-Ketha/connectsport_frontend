@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import '../../../Styles/Login_Register_Page/forgetPassword.css';
 import BackgroundImage from '../../../assets/images/background.jpg';
-import ReusableForm from '../../../Components/common/reusableForm';
+import ReusableForm from '../../../Components/ui/reusableForm';
 import axios from 'axios';
 
 const IdentityVerificationComponent = ({ onVerifyIdentity }) => {
