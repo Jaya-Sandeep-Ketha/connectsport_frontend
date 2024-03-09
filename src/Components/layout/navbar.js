@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import "../../Styles/HomePage/NavBar.css";
+import { useAuth } from "../../services/useAuth"; // Ensure this is the correct path
 import NavItem from "./navItem"; // Ensure the file name matches with case sensitivity
-import Logo from "../../assets/images/logo.png";
+import Logo from "../../assets/images/logo.png"; // Ensure this is the correct path
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
-const Navbar = ({ user, isLoggedIn, onLogout, onSearchChange }) => {
+const Navbar = ({ onSearchChange }) => {
   const [searchInput, setSearchInput] = useState("");
+  const { isLoggedIn, currentUser, handleLogout } = useAuth();
 
   const handleSearchChange = (e) => {
     const newValue = e.target.value;
@@ -43,18 +45,22 @@ const Navbar = ({ user, isLoggedIn, onLogout, onSearchChange }) => {
 
       <div className="navbar-expand">
         <ul className="navbar-nav">
-          {isLoggedIn && <NavItem link="/" active>Home</NavItem>}
-          {isLoggedIn && <NavItem link="/messages">Messages</NavItem>}
-          {isLoggedIn && <NavItem link="/friends">Friends</NavItem>}
-          {isLoggedIn && <NavItem link="/groups">Groups</NavItem>}
-          {isLoggedIn && <NavItem link="/pages">Pages</NavItem>}
-          {isLoggedIn && <NavItem link="/settings">Settings</NavItem>}
+          {isLoggedIn && (
+            <NavItem link={`/home/${currentUser || 'user'}`} active>
+              Home
+            </NavItem>
+          )}
+          {isLoggedIn && <NavItem link={`/${currentUser || 'user'}/messages`}>Messages</NavItem>}
+          {isLoggedIn && <NavItem link={`/${currentUser || 'user'}/friends`}>Friends</NavItem>}
+          {isLoggedIn && <NavItem link={`/${currentUser || 'user'}/groups`}>Groups</NavItem>}
+          {isLoggedIn && <NavItem link={`/${currentUser || 'user'}/pages`}>Pages</NavItem>}
+          {isLoggedIn && <NavItem link={`/${currentUser || 'user'}/settings`}>Settings</NavItem>}
         </ul>
       </div>
 
       {isLoggedIn && (
         <div className="navbar-extra">
-          <button onClick={onLogout} className="logout-button">
+          <button onClick={handleLogout} className="logout-button">
             Logout
           </button>
         </div>

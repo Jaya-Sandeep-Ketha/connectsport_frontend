@@ -1,49 +1,49 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import Navbar from "../../Components/layout/navbar"; // Ensure correct import path
-import PostList from "../post_item/postList"; // Ensure correct import path
-import PostForm from "../post_item/postForm"; // Ensure correct import path
-import SearchComponent from "../../Components/common/searchComponent"; 
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../services/useAuth"; // Adjust the path as necessary
+import Navbar from "../../Components/layout/navbar";
+import PostList from "../post_item/postList";
+import PostForm from "../post_item/postForm";
+import SearchComponent from "../../Components/common/searchComponent";
 
 function HomePage() {
   const navigate = useNavigate();
-  const [searchInput, setSearchInput] = useState(""); // Add this line
-  const [currentUser, setCurrentUser] = useState(
-    JSON.parse(localStorage.getItem("userName"))?.name
-  );
-  const isLoggedIn = !!localStorage.getItem("token");
+  const { isLoggedIn, currentUser, handleLogout } = useAuth();
+  const [searchInput, setSearchInput] = useState("");
   const [posts, setPosts] = useState([]);
   const [showPollForm, setShowPollForm] = useState(false);
 
-  // Fetch posts from the backend
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         const response = await fetch("http://localhost:3000/posts", {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`, // Adjust according to your auth method
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
         if (response.ok) {
           const data = await response.json();
-          setPosts(data); // Assuming the backend returns an array of posts
+          setPosts(data);
         } else {
           throw new Error("Failed to fetch posts");
         }
       } catch (error) {
-        console.error(error.message);
+        console.error(error);
+        navigate("/login"); // Redirect to login if fetching posts fails
       }
     };
 
-    fetchPosts();
-  }, []); // Empty dependency array ensures this runs once on mount
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userName");
-    setCurrentUser(null);
-    navigate("/login");
-  };
+    if (isLoggedIn) {
+      fetchPosts();
+    }
+  }, [isLoggedIn, navigate]);
+ 
+  // const handleLogout = () => {
+  //   localStorage.removeItem("token");
+  //   localStorage.removeItem("userName");
+  //   setCurrentUser(null);
+  //   navigate("/login");
+  // };
 
   const addNewPost = async (content, imageFile, tag) => {
     console.log("Received for posting:", { content, imageFile, tag });
