@@ -46,7 +46,7 @@ function HomePage() {
   // };
 
   const addNewPost = async (content, imageFile, tag) => {
-    console.log("Received for posting:", { content, imageFile, tag });
+    console.log("Sent for posting:", { content, imageFile, tag });
     const formData = new FormData();
     //    formData.append("content", content);
     formData.append("content", content.toString()); // Convert to string to ensure no object is passed

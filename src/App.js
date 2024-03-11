@@ -10,6 +10,7 @@ import RegisterForm from "./pages/Login_Register_Page/register_form";
 import HomePage from "./pages/Home_Page/index";
 import ForgotPassword from "./pages/Login_Register_Page/ForgetPassword";
 import SettingsPage from "./pages/Settings";
+import ChatApp from "./pages/Messaging";
 // import NotFoundPage from './Components/NotFoundPage'; // Ensure this component exists for handling 404 errors
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles.css";
@@ -40,6 +41,14 @@ export default function App() {
           element={
             <ProtectedRoute>
               <SettingsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/:userId/messages"
+          element={
+            <ProtectedRoute>
+              <ChatApp />
             </ProtectedRoute>
           }
         />

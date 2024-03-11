@@ -1,0 +1,92 @@
+/* Global Styles */
+  
+  .app-container {
+    display: flex;
+    height: 100vh;
+  }
+  
+  /* Sidebar Styles */
+  .sidebar {
+    width: 300px;
+    background-color: #2C3E50;
+    color: #ecf0f1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+  }
+  
+  .user-item {
+    cursor: pointer;
+    padding: 10px 0;
+    border-bottom: 1px solid #34495e;
+  }
+  
+  .user-item:hover {
+    background-color: #34495e;
+  }
+  
+  /* Search Bar Styles */
+  .search-bar {
+    margin-bottom: 20px;
+  }
+  
+  .search-bar input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 4px;
+  }
+  
+  .search-bar button {
+    width: 48%;
+    padding: 10px;
+    margin-right: 4%;
+    background-color: #34495e;
+    color: #ecf0f1;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .search-bar button:last-child {
+    margin-right: 0;
+  }
+  
+  /* Chat Area Styles */
+  .chat-area {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #ecf0f1;
+  }
+  
+  .chat-messages {
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+  }
+  
+  .message-input-container {
+    display: flex;
+    padding: 10px;
+    background-color: #bdc3c7;
+  }
+  
+  .message-input-container input {
+    flex-grow: 1;
+    padding: 10px;
+    margin-right: 10px;
+    border: 2px solid #34495e;
+    border-radius: 4px;
+  }
+  
+  .message-input-container button {
+    padding: 10px 20px;
+    background-color: #34495e;
+    color: #ecf0f1;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
