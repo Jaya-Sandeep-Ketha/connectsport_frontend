@@ -10,8 +10,10 @@ const SettingsPage = () => {
   const { isLoggedIn, currentUser, handleLogout } = useAuth();
   const [searchInput, setSearchInput] = useState("");
   const [emailPublic, setEmailPublic] = useState(false);
+  const [error, setError] = useState(""); // Add error state for handling fetch/update errors
+
   const [profile, setProfile] = useState({
-    username: "",
+    userId: "",
     bio: "",
     email: "",
   });
@@ -22,7 +24,7 @@ const SettingsPage = () => {
     // This checks if the authentication details are defined
     if (isLoggedIn !== undefined && currentUser !== null) {
       setProfile({
-        username: currentUser.username || "",
+        userId: currentUser || "",
         bio: currentUser.bio || "",
         email: currentUser.email || "",
       });
@@ -60,53 +62,142 @@ const SettingsPage = () => {
     reader.readAsDataURL(file);
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    console.log("Profile Data:", profile);
-    console.log("Email visibility:", emailPublic ? "Public" : "Private");
-    // Here, add the logic to update the user's profile
+    setLoading(true); // Start loading before API request
+
+    if (!currentUser) {
+      console.error("Error: Current user information is missing");
+      setError("Current user information is missing");
+      setLoading(false);
+      return;
+    }
+
+    const updatePayload = {
+      ...profile,
+      emailPublic,
+      currentUserId: currentUser, // Assuming 'currentUser.id' is the field you use to identify the user
+    };
+
+    console.log("Attempting to update profile for current user:", currentUser);
+    console.log("Update data being sent:", updatePayload);
+
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/${currentUser}/settings`,
+        {
+          // Updated URL
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updatePayload),
+        }
+      );
+
+      const data = await response.json();
+      if (!response.ok) {
+        console.error("Failed to update profile:", data);
+        throw new Error(data.message || "Failed to update profile");
+      }
+      console.log("Profile updated successfully:", data);
+      // Optionally, update UI or provide feedback
+    } catch (error) {
+      console.error("Failed to update profile:", error);
+      setError("Failed to update profile: " + error.message);
+    }
+    setLoading(false); // Stop loading after API request is done
   };
 
   return (
     <div className="container-fluid">
-      <Navbar
-        onSearchChange={setSearchInput}
-      />
-      <div className="settings__wrapper" style={{ backgroundImage: `url(${BackgroundImage})` }}>
+      <Navbar onSearchChange={setSearchInput} />
+      <div
+        className="settings__wrapper"
+        style={{ backgroundImage: `url(${BackgroundImage})` }}
+      >
         <div className="container mt-5 settings-container">
           <div className="image-preview-container text-center">
             {imagePreviewUrl ? (
-              <img src={imagePreviewUrl} alt="Profile Preview" className="image-preview" />
+              <img
+                src={imagePreviewUrl}
+                alt="Profile Preview"
+                className="image-preview"
+              />
             ) : (
-              <div className="image-preview">
-                No image
-              </div>
+              <div className="image-preview">No image</div>
             )}
           </div>
           <h1 className="mb-4 text-center">Settings</h1>
-          <form onSubmit={handleFormSubmit} className="row g-3 bg-white p-4 rounded shadow">
+          <form
+            onSubmit={handleFormSubmit}
+            className="row g-3 bg-white p-4 rounded shadow"
+          >
             <div className="mb-3 text-center">
-              <label htmlFor="profilePicture" className="form-label">Profile Picture:</label>
-              <input type="file" className="form-control" id="profilePicture" accept="image/*" onChange={handleImageChange} />
+              <label htmlFor="profilePicture" className="form-label">
+                Profile Picture:
+              </label>
+              <input
+                type="file"
+                className="form-control"
+                id="profilePicture"
+                accept="image/*"
+                onChange={handleImageChange}
+              />
             </div>
             <div className="mb-3 col-md-6">
-              <label htmlFor="username" className="form-label">Username:</label>
-              <input type="text" className="form-control" id="username" name="username" value={profile.username} onChange={handleProfileChange} />
+              <label htmlFor="username" className="form-label">
+                Username:
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                id="username"
+                name="username"
+                value={profile.userId}
+                onChange={handleProfileChange}
+              />
             </div>
             <div className="mb-3 col-md-6">
-              <label htmlFor="email" className="form-label">Email:</label>
-              <input type="email" className="form-control" id="email" name="email" value={profile.email} onChange={handleProfileChange} />
+              <label htmlFor="email" className="form-label">
+                Email:
+              </label>
+              <input
+                type="email"
+                className="form-control"
+                id="email"
+                name="email"
+                value={profile.email}
+                onChange={handleProfileChange}
+              />
               <div className="form-check mt-2">
-                <input className="form-check-input" type="checkbox" id="emailPublic" checked={emailPublic} onChange={handleEmailVisibilityToggle} />
-                <label className="form-check-label" htmlFor="emailPublic">Make Email Public</label>
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  id="emailPublic"
+                  checked={emailPublic}
+                  onChange={handleEmailVisibilityToggle}
+                />
+                <label className="form-check-label" htmlFor="emailPublic">
+                  Make Email Public
+                </label>
               </div>
             </div>
             <div className="mb-3 col-12">
-              <label htmlFor="bio" className="form-label">Bio:</label>
-              <textarea className="form-control" id="bio" name="bio" value={profile.bio} onChange={handleProfileChange} rows="3"></textarea>
+              <label htmlFor="bio" className="form-label">
+                Bio:
+              </label>
+              <textarea
+                className="form-control"
+                id="bio"
+                name="bio"
+                value={profile.bio}
+                onChange={handleProfileChange}
+                rows="3"
+              ></textarea>
             </div>
             <div className="col-12 text-center">
-              <button type="submit" className="btn btn-primary">Save Changes</button>
+              <button type="submit" className="btn btn-primary">
+                Save Changes
+              </button>
             </div>
           </form>
         </div>
