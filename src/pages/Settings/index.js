@@ -32,6 +32,67 @@ const SettingsPage = () => {
     }
   }, [isLoggedIn, currentUser]);
 
+  // if (loading) {
+  //   return <div>Loading...</div>; // Loading indicator
+  // }
+
+  // First useEffect for redirect and initializing state from currentUser
+  // useEffect(() => {
+  //   if (!isLoggedIn) {
+  //     navigate("/login");
+  //   } else if (currentUser) {
+  //     // This sets initial state from currentUser, which is important for your auth flow
+  //     setProfile((prevProfile) => ({
+  //       ...prevProfile,
+  //       userId: currentUser.userId || currentUser, // Adjust based on your data structure
+  //       bio: currentUser.bio || "",
+  //       email: currentUser.email || "",
+  //     }));
+  //     setLoading(false); // Important to stop loading once data is set
+  //   }
+  // }, [isLoggedIn, currentUser, navigate]);
+  
+
+  // Second useEffect for fetching detailed profile data
+  useEffect(() => {
+    if (isLoggedIn && currentUser) {
+      const fetchProfile = async () => {
+        setLoading(true); // Start loading state for async operation
+        try {
+          const userId =
+            typeof currentUser === "object" ? currentUser.userId : currentUser;
+          const response = await fetch(
+            `${process.env.REACT_APP_API_URL}/${userId}/settings`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                // Authorization: 'Bearer yourTokenHere', // Add this line if you're using token authentication
+              },
+            }
+          );
+          const data = await response.json();
+          if (!response.ok) {
+            throw new Error(data.message || "Failed to fetch profile");
+          }
+          setProfile({
+            userId: data.userId || "",
+            bio: data.bio || "",
+            email: data.email || "",
+          });
+          setEmailPublic(data.emailPublic || false);
+        } catch (error) {
+          setError(error.message);
+          console.error("Error fetching profile:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchProfile();
+    }
+  }, [currentUser, isLoggedIn]); // Re-run when these dependencies change
+
   if (loading) {
     return <div>Loading...</div>; // Loading indicator
   }
