@@ -109,6 +109,7 @@ function HomePage() {
     setShowPollForm(false);
   };
 
+  
   // This function should stay in HomePage if you're managing polls here
   const handleVote = (pollId, selectedOption) => {
     setPosts((prevPosts) =>

@@ -1,23 +1,44 @@
 import React, { useState } from 'react';
-import SocialButtons from '../../Components/common/socialButtons'; // Ensure the path is correct
+import SocialButtons from '../../Components/common/socialButtons';
+import { useAuth } from "../../services/useAuth"; // Ensure the path is correct
 
-function Post({ id, author, content, imageUrl, currentUser, deletePost }) {
-  const [likes, setLikes] = useState(0);
+function Post({ id, author, content, imageUrl, deletePost, likesCount, updatePostLikes }) {
   const [comments, setComments] = useState([]);
   const [commentText, setCommentText] = useState('');
   const [showComments, setShowComments] = useState(false);
-  const [showOptions, setShowOptions] = useState(false); // For showing the delete option
+  const [showOptions, setShowOptions] = useState(false);
+  const [error, setError] = useState('');
+  const { isLoggedIn, currentUser } = useAuth(); // Now using currentUser from useAuth
 
-  // Handles the increment of likes
-  const handleLike = () => setLikes(likes + 1);
+  // Handles the increment or decrement of likes
+  const handleLike = async () => {
+    try {
+      const response = await fetch(`http://localhost:3000/${currentUser}/posts/${id}/like`, {
+        method: 'POST', 
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Failed to update like status');
+      }
+      const updatedPost = await response.json();
+      updatePostLikes(updatedPost); // This function should handle updating the likes count in the parent component's state
+    } catch (error) {
+      console.error(error.message);
+      setError(error.message);
+    }
+  };
 
   const handleCommentSubmit = (e) => {
     e.preventDefault();
     if (!commentText.trim()) return;
     const newComment = {
       text: commentText,
-      commenter: currentUser || 'Anonymous',
+      commenter: currentUser ? currentUser.name : 'Anonymous', // Use the name from currentUser
     };
+    // Here, typically, you would send this new comment to the backend to update the post's comments.
+    // For simplicity, I'm just updating the local state directly.
     setComments([...comments, newComment]);
     setCommentText('');
   };
@@ -37,7 +58,7 @@ function Post({ id, author, content, imageUrl, currentUser, deletePost }) {
       <p>{content}</p>
       <SocialButtons 
         onLike={handleLike} 
-        likesCount={likes}
+        likesCount={likesCount}
         onCommentToggle={() => setShowComments(!showComments)} 
         commentsCount={comments.length}
       />
@@ -58,9 +79,11 @@ function Post({ id, author, content, imageUrl, currentUser, deletePost }) {
           </form>
         </div>
       )}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
     </div>
   );
 }
+
 
 const postStyle = {
   border: '1px solid #ccc',
