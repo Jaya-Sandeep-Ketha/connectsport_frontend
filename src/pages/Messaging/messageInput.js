@@ -1,36 +1,41 @@
 import React, { useState } from 'react';
+import { useAuth } from '../../services/useAuth'; // Correct path for your useAuth hook
 
-const MessageInput = () => {
+const MessageInput = ({ activeChat }) => {
   const [message, setMessage] = useState('');
+  const { currentUser } = useAuth(); // Assuming useAuth correctly provides currentUser
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Sending message: ", message); // Placeholder for send message logic
-    setMessage('');
-  };
-  /*
-    const handleSubmit = (e) => {
-    e.preventDefault();
-    fetch('http://localhost:3001/messages', {
+    console.log('Submitting message:', message); // Log the message being sent
+
+    if (!currentUser || !activeChat) {
+      console.error('No active user or chat selected');
+      return; // Exit if either is missing
+    }
+
+    console.log(`Sending message from ${currentUser} to ${activeChat}`); // Log sender and receiver IDs
+    fetch(`${process.env.REACT_APP_API_URL}/${currentUser}/messages`, { // URL updated to use currentUser
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        senderId: activeUser.id, // The ID of the current user sending the message
-        receiverId: activeChat.id, // The ID of the user receiving the message
-        text: message, // The message text
+        senderId: currentUser, // Sender ID from currentUser obtained through useAuth
+        receiverId: activeChat, // Receiver ID from activeChat, removed erroneous period
+        text: message, // Text of the message
       }),
     })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Message sent:', data);
-      setMessage('');
-      // Update the chat with the new message here
+    .then(response => {
+      console.log('Response status:', response.status); // Log response status
+      return response.json();
     })
-    .catch(error => console.error('Error sending message:', error));
-    };
-  */
+    .then(data => {
+      console.log('Message sent:', data); // Log the response data
+      setMessage(''); // Clear the message input field after sending
+    })
+    .catch(error => console.error('Error sending message:', error)); // Log any errors
+  };
 
   return (
     <form className="message-input-container" onSubmit={handleSubmit}>
