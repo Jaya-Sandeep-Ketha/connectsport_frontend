@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../services/useAuth'; // Correct path for your useAuth hook
 
-const MessageInput = ({ activeChat }) => {
+const MessageInput = ({ activeChat, onMessageSend }) => {
   const [message, setMessage] = useState('');
   const { currentUser } = useAuth(); // Assuming useAuth correctly provides currentUser
 
@@ -32,6 +32,7 @@ const MessageInput = ({ activeChat }) => {
     })
     .then(data => {
       console.log('Message sent:', data); // Log the response data
+      onMessageSend(data);
       setMessage(''); // Clear the message input field after sending
     })
     .catch(error => console.error('Error sending message:', error)); // Log any errors

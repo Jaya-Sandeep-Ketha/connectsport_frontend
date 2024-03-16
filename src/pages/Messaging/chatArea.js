@@ -60,7 +60,7 @@ const ChatArea = ({ activeChat }) => {
                     </div>
                 ))}
             </div>
-            <MessageInput activeChat={activeChat} />
+            <MessageInput activeChat={activeChat} onMessageSend={(newMessage) => setMessages([...messages, newMessage])} />
         </div>
     );
 };
