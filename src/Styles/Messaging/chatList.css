@@ -127,3 +127,20 @@
   text-align: center; /* Center the text */
   font-size: 16px; /* Slightly larger font size for visibility */
 }
+
+/* chatList.css */
+
+.group-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.manage-group-btn {
+  padding: 2px 8px;
+  font-size: 12px;
+  margin-left: auto; /* Ensures it stays to the right */
+  cursor: pointer;
+}

@@ -1,15 +1,15 @@
 import React from 'react';
 
-const SearchBar = ({ onSearchChange }) => (
+const SearchBar = ({ onSearchChange, onShowPeople, onShowGroups, onCreateGroup }) => (
   <div className="search-bar">
     <input 
       type="text" 
-      placeholder="Search friends..."
-      onChange={(e) => onSearchChange(e.target.value)} // Propagate the change up to the parent component
+      placeholder="Search friends or groups..."
+      onChange={(e) => onSearchChange(e.target.value)}
     />
     <div>
-      <button>People</button>
-      <button>Groups</button>
+      <button onClick={onShowPeople}>People</button>
+      <button onClick={onShowGroups}>Groups</button>
     </div>
   </div>
 );
