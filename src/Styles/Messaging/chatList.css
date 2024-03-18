@@ -2,7 +2,7 @@
   
   .app-container {
     display: flex;
-    height: 100vh;
+    height: 90vh;
   }
   
   /* Sidebar Styles */
@@ -143,4 +143,10 @@
   font-size: 12px;
   margin-left: auto; /* Ensures it stays to the right */
   cursor: pointer;
+}
+
+.user-list {
+  max-height: calc(100vh - 100px); /* Example height, adjust based on your layout */
+  overflow-y: auto; /* Enables vertical scrolling */
+  padding-right: 5px; /* Optional: to ensure scrollbar doesn't overlap content */
 }

@@ -98,6 +98,7 @@ const ParentComponent = () => {
               </button>
               {showCreateGroupForm && (
                 <CreateGroupForm
+                  userId={currentUser} 
                   friends={filteredFriends}
                   onClose={handleCloseForm} // This passes the handleCloseForm function to the CreateGroupForm
                   onCreate={(newGroup) => {

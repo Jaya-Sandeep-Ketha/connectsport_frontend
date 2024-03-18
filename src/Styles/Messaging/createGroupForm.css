@@ -124,3 +124,24 @@
     margin-right: 10px;
   }
   
+  
+  /* Add this new class for the friend selection labels */
+.friend-selection-label {
+  display: flex;
+  align-items: center; /* Vertically align the checkbox and the name */
+  margin-bottom: 10px; /* Space between each friend selection */
+}
+
+/* If you want the text to be more aligned with the checkbox, you can adjust its line-height */
+.friend-selection-label span {
+  line-height: 1.5; /* Adjust based on your design preference */
+}
+
+fieldset {
+  width: 100%;
+  border: none;
+  margin: 20px 0;
+  max-height: 150px; /* Adjust this value based on your needs */
+  overflow-y: auto; /* Enables vertical scrolling */
+  padding-right: 5px; /* Optional: to ensure scrollbar doesn't overlap content */
+}
