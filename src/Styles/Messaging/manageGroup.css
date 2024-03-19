@@ -1,0 +1,61 @@
+.group-management {
+    background: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 20px;
+    max-width: 400px;
+    margin: 20px auto;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .group-management h2 {
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .group-management select, .group-management button {
+    margin: 5px 0;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: white;
+    cursor: pointer;
+  }
+  
+  .group-management button {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+  }
+  
+  .group-management ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .group-management li {
+    background: #e9ecef;
+    margin: 5px 0;
+    padding: 10px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .group-management li button {
+    background-color: #dc3545;
+    border-color: #dc3545;
+  }
+  
+  /* Adjusts the close button */
+  .group-management > button:first-child {
+    background-color: transparent;
+    color: #333;
+    border: none;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 20px;
+  }
+  

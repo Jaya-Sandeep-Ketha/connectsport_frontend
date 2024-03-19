@@ -6,6 +6,7 @@ import UserList from "./userList";
 import GroupList from "./groupList";
 import ChatArea from "./chatArea";
 import CreateGroupForm from "./createGroupForm";
+import GroupManagement from './groupManagement';
 import "../../Styles/Messaging/chatList.css";
 
 const ParentComponent = () => {
@@ -15,6 +16,7 @@ const ParentComponent = () => {
   const [groups, setGroups] = useState([]);
   const [activeUser, setActiveUser] = useState(null);
   const [searchInput, setSearchInput] = useState("");
+  const [showGroupManagement, setShowGroupManagement] = useState(false);
   const { currentUser } = useAuth();
 
   useEffect(() => {
@@ -58,8 +60,9 @@ const ParentComponent = () => {
   const handleShowGroups = () => {
     setViewMode("groups");
     setShowCreateGroupForm(false);
+    setShowGroupManagement(false); // Close group management if it's open
     if (groups.length > 0) {
-      setActiveUser({ id: groups[0].name, type: "groups" }); // Set activeUser for groups view
+      setActiveUser({ id: groups[0].name, type: "groups" });
     } else {
       setActiveUser(null);
     }
@@ -82,6 +85,13 @@ const ParentComponent = () => {
   const filteredGroups = groups.filter((group) =>
     group.name.toLowerCase().includes(searchInput.toLowerCase())
   );
+
+  const handleManageGroup = (groupName) => {
+    console.log("Managing group:", groupName);
+    // You can implement logic to select the group if needed
+    setActiveUser({ id: groupName, type: "groups" });
+    setShowGroupManagement(true);
+  };
 
   console.log("Rendering ChatArea with activeUser:", activeUser);
   return (
@@ -109,7 +119,9 @@ const ParentComponent = () => {
                 onGroupSelect={(group) => {
                   console.log("Selected group:", group);
                   setActiveUser({ id: group.id, type: "groups" });
+                  setShowGroupManagement(false);
                 }}
+                onManageGroup={handleManageGroup}
               />
 
               <button className="create-group-btn" onClick={handleCreateGroup}>
@@ -132,6 +144,9 @@ const ParentComponent = () => {
         {activeUser && (
           <ChatArea activeChat={activeUser.id} viewMode={activeUser.type} />
         )}{" "}
+        {activeUser && activeUser.type === "groups" && showGroupManagement && (
+        <GroupManagement groupId={activeUser.id} onClose={() => setShowGroupManagement(false)} />
+      )}
         {/* Adjusted to pass correct activeChat and viewMode */}
       </div>
     </div>
