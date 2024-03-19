@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useAuth } from "../../services/useAuth"; // Assuming this provides currentUser
+import { useAuth } from "../../services/useAuth";
 import Navbar from "../../Components/layout/navbar";
 import SearchBar from "./searchBar";
 import UserList from "./userList";
@@ -11,23 +11,22 @@ import "../../Styles/Messaging/chatList.css";
 const ParentComponent = () => {
   const [viewMode, setViewMode] = useState("people");
   const [showCreateGroupForm, setShowCreateGroupForm] = useState(false);
-  const [friends, setFriends] = useState([]); // State now expects an array of friend objects, not just names
+  const [friends, setFriends] = useState([]);
   const [groups, setGroups] = useState([]);
-  const [activeUser, setActiveUser] = useState(null); // State for the active user in the chat
+  const [activeUser, setActiveUser] = useState(null);
   const [searchInput, setSearchInput] = useState("");
-  const { currentUser } = useAuth(); // Destructured only necessary auth details
+  const { currentUser } = useAuth();
 
   useEffect(() => {
     if (currentUser) {
       fetch(`${process.env.REACT_APP_API_URL}/friends/${currentUser}`)
         .then((response) => response.json())
         .then((friendsData) => {
-          // Assuming friendsData is structured as [{userId, name, lastMessage: {text, read}}]
           setFriends(
             friendsData.map((friend) => ({
               ...friend,
               userId: friend.userId,
-              name: friend.name, // Ensure this matches your data structure
+              name: friend.name,
               lastMessage: friend.lastMessage
                 ? friend.lastMessage.text
                 : "No messages",
@@ -38,26 +37,36 @@ const ParentComponent = () => {
                 : "",
             }))
           );
-          if (friendsData.length > 0) {
-            setActiveUser(friendsData[0]); // Adjusted to pass the first friend object
+          if (friendsData.length > 0 && viewMode === "people") {
+            setActiveUser({ id: friendsData[0].userId, type: "people" });
           }
         })
         .catch((error) => console.error("Error:", error));
     }
-  }, [currentUser]);
+  }, [currentUser, viewMode]); // Added viewMode as a dependency
 
   const handleShowPeople = () => {
     setViewMode("people");
     setShowCreateGroupForm(false);
+    if (friends.length > 0) {
+      setActiveUser({ id: friends[0].userId, type: "people" }); // Set activeUser for people view
+    } else {
+      setActiveUser(null);
+    }
   };
 
   const handleShowGroups = () => {
     setViewMode("groups");
-    setShowCreateGroupForm(false); // Hide group form when showing groups
+    setShowCreateGroupForm(false);
+    if (groups.length > 0) {
+      setActiveUser({ id: groups[0].name, type: "groups" }); // Set activeUser for groups view
+    } else {
+      setActiveUser(null);
+    }
   };
 
   const handleCreateGroup = () => {
-    setShowCreateGroupForm(true); // Show the group creation form
+    setShowCreateGroupForm(true);
   };
 
   const handleCloseForm = () => {
@@ -74,6 +83,7 @@ const ParentComponent = () => {
     group.name.toLowerCase().includes(searchInput.toLowerCase())
   );
 
+  console.log("Rendering ChatArea with activeUser:", activeUser);
   return (
     <div className="container-fluid">
       <Navbar />
@@ -85,33 +95,44 @@ const ParentComponent = () => {
             onShowGroups={handleShowGroups}
           />
           {viewMode === "people" && (
-            <UserList users={filteredFriends} onUserSelect={setActiveUser} />
+            <UserList
+              users={filteredFriends}
+              onUserSelect={(user) =>
+                setActiveUser({ id: user.userId, type: "people" })
+              }
+            />
           )}
           {viewMode === "groups" && (
             <>
               <GroupList
                 groups={filteredGroups}
-                onGroupSelect={setActiveUser}
+                onGroupSelect={(group) => {
+                  console.log("Selected group:", group);
+                  setActiveUser({ id: group.id, type: "groups" });
+                }}
               />
+
               <button className="create-group-btn" onClick={handleCreateGroup}>
                 + New Group
               </button>
               {showCreateGroupForm && (
                 <CreateGroupForm
-                  userId={currentUser} 
+                  userId={currentUser}
                   friends={filteredFriends}
-                  onClose={handleCloseForm} // This passes the handleCloseForm function to the CreateGroupForm
+                  onClose={handleCloseForm}
                   onCreate={(newGroup) => {
                     setGroups([...groups, newGroup]);
-                    setShowCreateGroupForm(false); // Closes the form after a new group is successfully created
+                    setShowCreateGroupForm(false);
                   }}
                 />
               )}
             </>
           )}
         </div>
-        {activeUser && <ChatArea activeChat={activeUser.userId} />}{" "}
-        {/* Ensure we pass userId to ChatArea */}
+        {activeUser && (
+          <ChatArea activeChat={activeUser.id} viewMode={activeUser.type} />
+        )}{" "}
+        {/* Adjusted to pass correct activeChat and viewMode */}
       </div>
     </div>
   );

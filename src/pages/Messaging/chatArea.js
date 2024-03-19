@@ -1,27 +1,38 @@
 import React, { useEffect, useState } from 'react';
 import MessageInput from './messageInput';
-import { useAuth } from '../../services/useAuth'; // Correct path for your useAuth hook
+import { useAuth } from '../../services/useAuth';
 
-const ChatArea = ({ activeChat }) => {
+const ChatArea = ({ activeChat, viewMode }) => {
     const [messages, setMessages] = useState([]);
-    const { currentUser } = useAuth(); // Assuming currentUser holds the current user's username
+    const { currentUser } = useAuth();
 
     useEffect(() => {
+        console.log("[ChatArea] Props:", { activeChat, viewMode });
+        console.log(`[ChatArea] currentUser: ${currentUser}, activeChat: ${activeChat}, viewMode: ${viewMode}`);
         if (currentUser && activeChat) {
-            // Fetch messages
-            const url = `${process.env.REACT_APP_API_URL}/messages?senderId=${currentUser}&receiverId=${activeChat}`;
+            const url = viewMode === 'groups'
+                ? `${process.env.REACT_APP_API_URL}/groups/${activeChat}/messages`
+                : `${process.env.REACT_APP_API_URL}/messages?senderId=${currentUser}&receiverId=${activeChat}`;
+            console.log(`[ChatArea] Fetching messages from URL: ${url}`);
+
             fetch(url)
                 .then(response => response.json())
-                .then(setMessages)
+                .then((data) => {
+                    console.log('[ChatArea] Fetched messages:', data);
+                    setMessages(data);
+                })
                 .catch(console.error);
         }
-    }, [currentUser, activeChat]);
+    }, [currentUser, activeChat, viewMode]);
+
+    const chatHeader = viewMode === 'groups' 
+        ? `Group: ${activeChat}` 
+        : `Chatting with: ${activeChat}`;
+    console.log(`[ChatArea] chatHeader: ${chatHeader}`);
 
     return (
         <div className="chat-area">
-            <div className="active-chat-header">
-                Chatting with: <strong>{activeChat}</strong>
-            </div>
+            <div className="active-chat-header">{chatHeader}</div>
             <div className="chat-messages">
                 {messages.map((msg, index) => (
                     <div key={index} className={`message ${msg.senderId === currentUser ? 'sent' : 'received'}`}>
@@ -29,10 +40,9 @@ const ChatArea = ({ activeChat }) => {
                     </div>
                 ))}
             </div>
-            <MessageInput activeChat={activeChat} onMessageSend={(newMessage) => setMessages([...messages, newMessage])} />
+            <MessageInput activeChat={activeChat} viewMode={viewMode} onMessageSend={(newMessage) => setMessages([...messages, newMessage])} />
         </div>
     );
 };
 
 export default ChatArea;
-
