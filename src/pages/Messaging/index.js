@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from 'axios';
 import { useAuth } from "../../services/useAuth";
 import Navbar from "../../Components/layout/navbar";
 import SearchBar from "./searchBar";
@@ -46,6 +47,24 @@ const ParentComponent = () => {
         .catch((error) => console.error("Error:", error));
     }
   }, [currentUser, viewMode]); // Added viewMode as a dependency
+
+  useEffect(() => {
+    const fetchGroups = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/groups/${currentUser}`);
+        setGroups(response.data);
+      } catch (error) {
+        console.error("Error fetching groups:", error);
+      }
+    };
+  
+    // Fetch groups only when the view mode is 'groups'
+    if (viewMode === "groups") {
+      fetchGroups();
+    }
+  }, [viewMode, currentUser]); // Include currentUser in the dependency array
+  
+  
 
   const handleShowPeople = () => {
     setViewMode("people");

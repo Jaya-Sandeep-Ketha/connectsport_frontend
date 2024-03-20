@@ -49,7 +49,8 @@ const GroupManagement = ({ groupId, onClose }) => {
   };
 
   const handleRemoveMember = (userId) => {
-    axios.post(`${process.env.REACT_APP_API_URL}/groups/${groupId}/removeMember`, { userId })
+    console.log("Attempting to remove member", { groupId, userId });
+    axios.post(`${process.env.REACT_APP_API_URL}/groups/${groupId}/removeMember`, { userId })  
       .then(() => {
         setFeedbackMessage(`User removed successfully.`);
         fetchGroupMembers(); // Refresh the members list
@@ -69,7 +70,7 @@ const GroupManagement = ({ groupId, onClose }) => {
       <select onChange={e => setSelectedUserId(e.target.value)} value={selectedUserId}>
         <option value="">Select User</option>
         {nonMembers.filter(user => !members.find(member => member.id === user.id)).map(user => (
-          <option key={user.id} value={user.id}>{user.name}</option>
+          <option key={user.name} value={user.name}>{user.name}</option>
         ))}
       </select>
       <button onClick={handleAddMember}>Add Member</button>
