@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useAuth } from "../../services/useAuth";
 import "../../Styles/Messaging/manageGroup.css";
 
 const GroupManagement = ({ groupId, onClose }) => {
@@ -7,29 +8,38 @@ const GroupManagement = ({ groupId, onClose }) => {
   const [nonMembers, setNonMembers] = useState([]);
   const [selectedUserId, setSelectedUserId] = useState("");
   const [feedbackMessage, setFeedbackMessage] = useState("");
+  const { currentUser } = useAuth();
 
   useEffect(() => {
     fetchGroupMembers();
-    // fetchNonMemberUsers();
+    fetchNonMemberFriends();
   }, [groupId]);
 
   const fetchGroupMembers = () => {
     axios
       .get(`${process.env.REACT_APP_API_URL}/groups/${groupId}/members`)
       .then((response) => {
-        console.log("Fetched group members:", response.data); // Log fetched data
         setMembers(response.data);
-        console.log("Members state after fetching:", response.data); // Log state after setting
       })
       .catch((error) => console.error("Fetch members failed:", error));
   };
 
-  const fetchNonMemberUsers = () => {
-    axios
-      .get(`${process.env.REACT_APP_API_URL}/users`)
-      .then((response) => setNonMembers(response.data))
-      .catch((error) => console.error("Fetch users failed:", error));
-  };
+  const fetchNonMemberFriends = () => {
+    if (!currentUser) {
+        console.error('No current user defined when fetching non-member friends');
+        return; // Exit the function if no currentUser to avoid unnecessary request
+    }
+
+    axios.get(`${process.env.REACT_APP_API_URL}/groups/${groupId}/nonMemberFriends`, {
+        params: { currentUser } // Ensure this matches the query parameter expected by your backend
+    })
+    .then(response => {
+        setNonMembers(response.data);
+    })
+    .catch(error => {
+        console.error('Fetch non-member friends failed:', error);
+    });
+};
 
   const handleAddMember = () => {
     if (!selectedUserId) {
@@ -43,7 +53,7 @@ const GroupManagement = ({ groupId, onClose }) => {
       .then(() => {
         setFeedbackMessage(`User added successfully.`);
         fetchGroupMembers();
-        fetchNonMemberUsers();
+        fetchNonMemberFriends();
         setSelectedUserId("");
       })
       .catch((error) => {
@@ -53,7 +63,6 @@ const GroupManagement = ({ groupId, onClose }) => {
   };
 
   const handleRemoveMember = (userId) => {
-    console.log(groupId, userId);
     axios
       .post(`${process.env.REACT_APP_API_URL}/groups/${groupId}/removeMember`, {
         userId,
@@ -79,10 +88,10 @@ const GroupManagement = ({ groupId, onClose }) => {
       >
         <option value="">Select User</option>
         {nonMembers
-          .filter((user) => !members.some((member) => member.id === user.id))
-          .map((user) => (
-            <option key={user.id} value={user.id}>
-              {user.name}
+          .filter(userName => !members.includes(userName)) // Assuming nonMembers are an array of friend names and members are also names
+          .map((userName, index) => ( // userName is a string
+            <option key={index} value={userName}>
+              {userName}
             </option>
           ))}
       </select>
@@ -96,7 +105,6 @@ const GroupManagement = ({ groupId, onClose }) => {
             ) => (
               <li key={index}>
                 {" "}
-                {/* If names are unique, you can use memberName as key instead */}
                 {memberName} {/* Directly display the memberName */}
                 <button onClick={() => handleRemoveMember(memberName)}>
                   Remove
