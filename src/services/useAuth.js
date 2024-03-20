@@ -9,8 +9,7 @@ export const useAuth = () => {
     useEffect(() => {
         const token = localStorage.getItem('token');
         const user = localStorage.getItem('userName') ? JSON.parse(localStorage.getItem('userName')).name : null;
-        console.log('useAuth useEffect:', { token, user }); // Debugging line
-
+    
         setIsLoggedIn(!!token);
         setCurrentUser(user);
     }, []);

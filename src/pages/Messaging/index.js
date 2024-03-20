@@ -106,13 +106,11 @@ const ParentComponent = () => {
   );
 
   const handleManageGroup = (groupName) => {
-    console.log("Managing group:", groupName);
     // You can implement logic to select the group if needed
     setActiveUser({ id: groupName, type: "groups" });
     setShowGroupManagement(true);
   };
 
-  console.log("Rendering ChatArea with activeUser:", activeUser);
   return (
     <div className="container-fluid">
       <Navbar />
@@ -136,7 +134,6 @@ const ParentComponent = () => {
               <GroupList
                 groups={filteredGroups}
                 onGroupSelect={(group) => {
-                  console.log("Selected group:", group);
                   setActiveUser({ id: group.id, type: "groups" });
                   setShowGroupManagement(false);
                 }}

@@ -6,9 +6,7 @@ const MessageInput = ({ activeChat, viewMode, onMessageSend }) => {
   const { currentUser } = useAuth();
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(`[MessageInput] Submitting message: '${message}' from ${currentUser} to ${activeChat} in ${viewMode} mode`);
-    
+    e.preventDefault();    
     if (!currentUser || !activeChat) {
       console.error('[MessageInput] No active user or chat selected');
       return;
@@ -17,7 +15,6 @@ const MessageInput = ({ activeChat, viewMode, onMessageSend }) => {
     const url = viewMode === 'groups'
       ? `${process.env.REACT_APP_API_URL}/groups/${activeChat}/messages`
       : `${process.env.REACT_APP_API_URL}/${currentUser}/messages`;
-    console.log(`[MessageInput] Sending message to URL: ${url}`);
 
     fetch(url, {
       method: 'POST',
@@ -32,12 +29,10 @@ const MessageInput = ({ activeChat, viewMode, onMessageSend }) => {
       }),
     })
     .then(response => {
-      console.log(`[MessageInput] Response status: ${response.status}`);
       if (!response.ok) throw new Error(`Failed to send message: ${response.statusText}`);
       return response.json();
     })
     .then(data => {
-      console.log('[MessageInput] Message sent:', data);
       onMessageSend(data);
       setMessage(''); // Clear the message input field after sending
     })
