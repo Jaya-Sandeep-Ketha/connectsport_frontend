@@ -1,0 +1,28 @@
+.error {
+    color: red;
+}
+
+form {
+    margin-bottom: 20px;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    margin-bottom: 10px;
+}
+
+button {
+    margin-left: 10px;
+}
+
+.friends-list {
+    list-style: none;
+}
+
+.friend-item {
+    margin-bottom: 10px;
+}
