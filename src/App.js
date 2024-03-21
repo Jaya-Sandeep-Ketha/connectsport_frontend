@@ -9,6 +9,7 @@ import LoginForm from "./pages/Login_Register_Page/login_form";
 import RegisterForm from "./pages/Login_Register_Page/register_form";
 import HomePage from "./pages/Home_Page/index";
 import ForgotPassword from "./pages/Login_Register_Page/ForgetPassword";
+import FriendsPage from "./pages/Friends";
 import SettingsPage from "./pages/Settings";
 import ChatApp from "./pages/Messaging";
 // import NotFoundPage from './Components/NotFoundPage'; // Ensure this component exists for handling 404 errors
@@ -49,6 +50,14 @@ export default function App() {
           element={
             <ProtectedRoute>
               <ChatApp />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/:userId/friends"
+          element={
+            <ProtectedRoute>
+              <FriendsPage />
             </ProtectedRoute>
           }
         />
