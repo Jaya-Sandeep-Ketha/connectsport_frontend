@@ -1,12 +1,39 @@
-import React from "react";
+import React, { useEffect, useState, useContext } from "react";
+import { useAuth } from "../../services/useAuth"; // Correct path as necessary
 
 const PeopleList = () => {
-  // Updated people data to include mutual friends count
-  const people = [
-    { id: 1, name: "John Doe", mutualFriends: 5 },
-    { id: 2, name: "Jane Doe", mutualFriends: 3 },
-    // Add more people as needed
-  ];
+  const [people, setPeople] = useState([]);
+  const { currentUser } = useAuth(); // Ensuring useAuth provides currentUser
+
+  useEffect(() => {
+    if (currentUser) {
+      console.log("Fetching people for user:", currentUser);
+      const url = new URL(`${process.env.REACT_APP_API_URL}/people`);
+      url.searchParams.append("userId", currentUser); // Add userId to query params
+
+      fetch(url, {
+        headers: {
+          "Content-Type": "application/json",
+          // Include any other headers if needed
+        },
+      })
+        .then((response) => {
+          console.log("Response received:", response);
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log("Data fetched successfully:", data);
+          if (data.length > 0) {
+            console.log("Example person:", data[0]);
+          }
+          setPeople(data);
+        })
+        .catch((error) => console.error("Fetching people failed", error));
+    }
+  }, [currentUser]);
 
   return (
     <div className="col-md-5 mb-5">
@@ -14,12 +41,19 @@ const PeopleList = () => {
         <div className="card-body">
           <h3 className="card-title">People You May Know</h3>
           {people.map((person) => (
-            <div key={person.id} className="list-group mb-2">
+            <div key={person.userId} className="list-group mb-2">
               <div className="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                 <div>
-                  <span>{person.name}</span>
-                  <div className="text-muted" style={{ fontSize: '0.8rem' }}>
-                    {person.mutualFriends} mutual friend{person.mutualFriends > 1 ? 's' : ''}
+                  {/* Update this line to correctly display the name */}
+                  <span>
+                    {person.name}
+                  </span>
+                  <div className="text-muted" style={{ fontSize: "0.8rem" }}>
+                    {person.mutualFriends
+                      ? `${person.mutualFriends} mutual friend${
+                          person.mutualFriends > 1 ? "s" : ""
+                        }`
+                      : "No mutual friends"}
                   </div>
                 </div>
                 <button className="btn btn-primary">Send Request</button>

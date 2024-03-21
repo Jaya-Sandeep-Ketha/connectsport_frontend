@@ -52,8 +52,8 @@ const Navbar = ({ onSearchChange }) => {
           )}
           {isLoggedIn && <NavItem link={`/${currentUser || 'user'}/messages`}>Messages</NavItem>}
           {isLoggedIn && <NavItem link={`/${currentUser || 'user'}/friends`}>Friends</NavItem>}
-          {isLoggedIn && <NavItem link={`/${currentUser || 'user'}/groups`}>Groups</NavItem>}
           {isLoggedIn && <NavItem link={`/${currentUser || 'user'}/pages`}>Pages</NavItem>}
+          {isLoggedIn && <NavItem link={`/${currentUser || 'user'}/notifications`}>Notifications</NavItem>}
           {isLoggedIn && <NavItem link={`/${currentUser || 'user'}/settings`}>Settings</NavItem>}
         </ul>
       </div>
