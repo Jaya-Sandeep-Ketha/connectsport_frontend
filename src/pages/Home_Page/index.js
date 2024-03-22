@@ -23,6 +23,7 @@ function HomePage() {
         });
         if (response.ok) {
           const data = await response.json();
+          console.log("Fetched posts:", data);
           setPosts(data);
         } else {
           throw new Error("Failed to fetch posts");
@@ -57,7 +58,7 @@ function HomePage() {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/posts", {
+      const response = await fetch("http://localhost:3000/newpost", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`, // Ensure this is correct

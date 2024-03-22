@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import SocialButtons from '../../Components/common/socialButtons';
 import { useAuth } from "../../services/useAuth"; // Ensure the path is correct
 
-function Post({ id, author, content, imageUrl, deletePost, likesCount, updatePostLikes }) {
+function Post({ id, author, content, image, deletePost, likesCount, updatePostLikes }) {
   const [comments, setComments] = useState([]);
   const [commentText, setCommentText] = useState('');
   const [showComments, setShowComments] = useState(false);
@@ -54,7 +54,9 @@ function Post({ id, author, content, imageUrl, deletePost, likesCount, updatePos
           </div>
         )}
       </div>
-      {imageUrl && <img src={imageUrl} alt="Post" style={imageStyle} />}
+      {image && image.url && (
+        <img src={image.url} alt="Post" style={imageStyle} />
+      )}
       <p>{content}</p>
       <SocialButtons 
         onLike={handleLike} 
