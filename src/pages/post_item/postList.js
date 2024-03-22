@@ -12,7 +12,7 @@ function PostList({ posts, currentUser, onVote }) {
           <PollDisplay key={post.id} poll={post} onVote={onVote} />
         ) : (
           // Render Post for regular posts using the unique post.id
-          <Post key={post.id} {...post} currentUser={currentUser} />
+          <Post key={post.id} author={post.userId} {...post} currentUser={currentUser} />
         )
       )}
     </div>
