@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import BlockDropdown from './blockDropdown';
+import BlockUser from './blockUser';
 import { useAuth } from "../../services/useAuth";
 
 const FriendRequests = () => {
@@ -96,7 +96,7 @@ const FriendRequests = () => {
               </div>
             </div>
           )) : <div>No friend requests</div>}
-          <BlockDropdown />
+          <BlockUser />
         </div>
       </div>
     </div>
