@@ -35,6 +35,56 @@ const PeopleList = () => {
     }
   }, [currentUser]);
 
+  const sendFriendRequest = (targetUserId) => {
+    fetch(`${process.env.REACT_APP_API_URL}/send-request`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        // Include any other headers if needed
+      },
+      body: JSON.stringify({ userId: currentUser, targetUserId: targetUserId }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data.message);
+        // Refresh the people list or modify it directly to reflect changes
+        setPeople(
+          people.map((person) =>
+            person.userId === targetUserId
+              ? { ...person, requestSent: true }
+              : person
+          )
+        );
+      })
+      .catch((error) => console.error("Error sending friend request:", error));
+  };
+
+  const cancelFriendRequest = (targetUserId) => {
+    fetch(`${process.env.REACT_APP_API_URL}/cancel-request`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        // Include any other headers if needed
+      },
+      body: JSON.stringify({ userId: currentUser, targetUserId: targetUserId }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data.message);
+        // Refresh the people list or modify it directly to reflect changes
+        setPeople(
+          people.map((person) =>
+            person.userId === targetUserId
+              ? { ...person, requestSent: false }
+              : person
+          )
+        );
+      })
+      .catch((error) =>
+        console.error("Error canceling friend request:", error)
+      );
+  };
+
   return (
     <div className="col-md-5 mb-5">
       <div className="card">
@@ -44,10 +94,7 @@ const PeopleList = () => {
             <div key={person.userId} className="list-group mb-2">
               <div className="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                 <div>
-                  {/* Update this line to correctly display the name */}
-                  <span>
-                    {person.name}
-                  </span>
+                  <span>{person.name}</span>
                   <div className="text-muted" style={{ fontSize: "0.8rem" }}>
                     {person.mutualFriends
                       ? `${person.mutualFriends} mutual friend${
@@ -56,7 +103,21 @@ const PeopleList = () => {
                       : "No mutual friends"}
                   </div>
                 </div>
-                <button className="btn btn-primary">Send Request</button>
+                {!person.requestSent ? (
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => sendFriendRequest(person.userId)}
+                  >
+                    Send Request
+                  </button>
+                ) : (
+                  <button
+                    className="btn btn-success"
+                    onClick={() => cancelFriendRequest(person.userId)}
+                  >
+                    Sent
+                  </button>
+                )}
               </div>
             </div>
           ))}
