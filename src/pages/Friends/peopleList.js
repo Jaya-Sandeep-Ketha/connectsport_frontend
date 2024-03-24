@@ -1,40 +1,50 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useAuth } from "../../services/useAuth"; // Correct path as necessary
 
-const PeopleList = () => {
+const PeopleList = ({ filters }) => {
   const [people, setPeople] = useState([]);
   const { currentUser } = useAuth(); // Ensuring useAuth provides currentUser
   const [refetchTrigger, setRefetchTrigger] = useState(false);
 
+
   useEffect(() => {
     if (currentUser) {
-      console.log("Fetching people for user:", currentUser);
+      console.log("Fetching people for user:", currentUser); // Log current user being used for fetch
       const url = new URL(`${process.env.REACT_APP_API_URL}/people`);
-      url.searchParams.append("userId", currentUser); // Add userId to query params
+      url.searchParams.append("userId", currentUser); // Make sure you use the correct user identifier here
+
+      // Ensure filters is defined and then append parameters
+      if (filters?.sport) {
+        url.searchParams.append("sport", filters.sport);
+      }
+      if (filters?.friend) {
+        url.searchParams.append("friend", filters.friend);
+      }
+
+      console.log(`Fetching from URL: ${url.toString()}`); // Log the full URL being requested
 
       fetch(url, {
         headers: {
           "Content-Type": "application/json",
-          // Include any other headers if needed
+          // Include any other necessary headers
         },
       })
-        .then((response) => {
-          console.log("Response received:", response);
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
-          return response.json();
-        })
-        .then((data) => {
-          console.log("Data fetched successfully:", data);
-          if (data.length > 0) {
-            console.log("Example person:", data[0]);
-          }
-          setPeople(data);
-        })
-        .catch((error) => console.error("Fetching people failed", error));
+      .then((response) => {
+        console.log("Response received:", response); // Log response metadata
+        if (!response.ok) {
+          throw new Error(`Network response was not ok, status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Data fetched successfully:", data); // Log actual data received
+        setPeople(data);
+      })
+      .catch((error) => {
+        console.error("Fetching people failed:", error); // Log any errors during fetch
+      });
     }
-  }, [currentUser, refetchTrigger]);
+  }, [currentUser, refetchTrigger, filters]); // Ensure filters is included in the dependency array
 
   const sendFriendRequest = (targetUserId) => {
     fetch(`${process.env.REACT_APP_API_URL}/send-request`, {

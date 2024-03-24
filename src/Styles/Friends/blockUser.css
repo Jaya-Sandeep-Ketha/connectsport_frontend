@@ -36,7 +36,27 @@
     transition: background-color 0.2s ease;
   }
   
+  /* Inside blockUser.css
+.block-button {
+  padding: 5px 10px;
+  border: none;
+  cursor: pointer;
+  color: white;
+  font-weight: bold;
+} */
+
+.block-button.block {
+  background-color: red;
+}
+
+.block-button.unblock {
+  background-color: green;
+}
+
+
   .block-button:hover {
     background-color: #0056b3;
   }
+
+
   

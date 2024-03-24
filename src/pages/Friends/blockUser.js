@@ -105,7 +105,7 @@ const BlockUser = () => {
           <div key={user.userId} className="result-item">
             {user.fullName}
             <button
-              className="block-button"
+              className={`block-button ${user.isBlocked ? 'unblock' : 'block'}`}
               onClick={() => handleBlockUnblock(user)}
             >
               {user.isBlocked ? "Unblock" : "Block"}
