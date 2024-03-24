@@ -5,51 +5,90 @@ import "../../Styles/Friends/blockUser.css";
 const BlockUser = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  const { currentUser } = useAuth();
-  const [refetchTrigger, setRefetchTrigger] = useState(false); // Refetch trigger
+  const { currentUser } = useAuth(); // Assuming currentUser contains userId
+  const [refetchTrigger, setRefetchTrigger] = useState(false);
+  const [blockedUsers, setBlockedUsers] = useState(new Set());
 
-  // Fetch search results whenever searchTerm changes or a user is blocked
   useEffect(() => {
-    if (searchTerm) {
-      fetch(`${process.env.REACT_APP_API_URL}/search?searchTerm=${searchTerm}`)
+    // Add a check to ensure currentUser is defined
+    if (currentUser) {
+      fetch(
+        `${process.env.REACT_APP_API_URL}/blocked-users?userId=${currentUser}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
         .then((response) => response.json())
         .then((data) => {
           if (Array.isArray(data)) {
-            const resultsWithFullName = data.map((user) => ({
-              ...user,
-              fullName: `${user.firstName} ${user.lastName}`,
-            }));
-            setSearchResults(resultsWithFullName);
+            const blockedIds = new Set(data.map((user) => user.userId));
+            setBlockedUsers(blockedIds);
           } else {
-            console.error("Expected an array for search results, received:", data);
-            setSearchResults([]);
+            console.error("Expected an array, received:", data);
+            // Handle cases where data is not an array
           }
+        })
+        .catch((error) =>
+          console.error("Error fetching blocked users:", error)
+        );
+    }
+
+    if (searchTerm) {
+      fetch(
+        `${process.env.REACT_APP_API_URL}/search?searchTerm=${searchTerm}&userId=${currentUser}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          const resultsWithFullName = data.map((user) => ({
+            ...user,
+            isBlocked: blockedUsers.has(user.userId),
+            fullName: `${user.firstName} ${user.lastName}`,
+          }));
+          setSearchResults(resultsWithFullName);
         })
         .catch((error) => console.error("Error searching users:", error));
     } else {
       setSearchResults([]);
     }
-  }, [searchTerm, refetchTrigger]); // Include refetchTrigger as a dependency
+  }, [searchTerm, refetchTrigger, currentUser, blockedUsers]);
+
+  const handleBlockUnblock = (user) => {
+    const action = user.isBlocked ? "unblock" : "block";
+    if (currentUser) {
+      fetch(`${process.env.REACT_APP_API_URL}/${action}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: currentUser,
+          targetUserId: user.userId,
+        }),
+      })
+        .then((response) => response.json())
+        .then(() => {
+          setRefetchTrigger(!refetchTrigger);
+          if (user.isBlocked) {
+            blockedUsers.delete(user.userId);
+          } else {
+            blockedUsers.add(user.userId);
+          }
+          setBlockedUsers(new Set(blockedUsers));
+        })
+        .catch((error) => console.error(`Error ${action}ing user:`, error));
+    }
+  };
 
   const handleSearch = (event) => {
     const term = event.target.value;
     setSearchTerm(term);
-  };
-
-  const handleBlock = (targetUserId) => {
-    fetch(`${process.env.REACT_APP_API_URL}/block`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ userId: currentUser, targetUserId }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data.message);
-        setRefetchTrigger(!refetchTrigger); // Toggle to trigger a refetch
-      })
-      .catch((error) => console.error("Error blocking user:", error));
   };
 
   return (
@@ -59,7 +98,7 @@ const BlockUser = () => {
         type="text"
         value={searchTerm}
         onChange={handleSearch}
-        placeholder="Search users to block"
+        placeholder="Search users to block or unblock"
       />
       <div className="results-container">
         {searchResults.map((user) => (
@@ -67,9 +106,9 @@ const BlockUser = () => {
             {user.fullName}
             <button
               className="block-button"
-              onClick={() => handleBlock(user.userId)}
+              onClick={() => handleBlockUnblock(user)}
             >
-              Block
+              {user.isBlocked ? "Unblock" : "Block"}
             </button>
           </div>
         ))}
