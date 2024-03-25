@@ -18,11 +18,11 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles.css";
 
 // A functional ProtectedRoute component
-const ProtectedRoute = ({ children }) => {
-  console.log("hello"); 
-  const isAuthenticated = Boolean(localStorage.getItem("token")); // Check for authentication token
-  return isAuthenticated ? children : <Navigate to="/login" replace />;
-};
+// const ProtectedRoute = ({ children }) => {
+//   console.log("hello"); 
+//   const isAuthenticated = Boolean(localStorage.getItem("token")); // Check for authentication token
+//   return isAuthenticated ? children : <Navigate to="/login" replace />;
+// };
 
 export default function App() {
   return (
@@ -34,35 +34,35 @@ export default function App() {
         <Route
           path="/home/:userId"
           element={
-            <ProtectedRoute>
+            // <ProtectedRoute>
               <HomePage />
-            </ProtectedRoute>
+            // </ProtectedRoute>
           }
         />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route
           path="/:userId/settings"
           element={
-            <ProtectedRoute>
+            // <ProtectedRoute>
               <SettingsPage />
-            </ProtectedRoute>
+            // </ProtectedRoute>
           }
         />
         <Route
           path="/:userId/messages"
           element={
-            <ProtectedRoute>
+            // <ProtectedRoute>
               <ChatApp />
-            </ProtectedRoute>
+            // </ProtectedRoute>
           }
           
         />
         <Route
           path="/:userId/friends"
           element={
-            <ProtectedRoute>
+            // <ProtectedRoute>
               <FriendsPage />
-            </ProtectedRoute>
+            // </ProtectedRoute>
           }
         />
         {/* <Route path="*" element={<NotFoundPage />} /> Uncomment for handling unmatched routes */}
