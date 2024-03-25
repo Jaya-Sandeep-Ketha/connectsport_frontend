@@ -16,7 +16,7 @@ function HomePage() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch("http://localhost:3000/posts", {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/posts`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -58,7 +58,7 @@ function HomePage() {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/newpost", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/newpost`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`, // Ensure this is correct
@@ -80,7 +80,7 @@ function HomePage() {
   // Add this function inside your HomePage component
   const deletePost = async (postId) => {
     try {
-      const response = await fetch(`http://localhost:3000/posts/${postId}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/posts/${postId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`, // Adjust according to your auth method

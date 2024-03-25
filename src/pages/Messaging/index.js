@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from 'axios';
+import axios from "axios";
 import { useAuth } from "../../services/useAuth";
 import Navbar from "../../Components/layout/navbar";
 import SearchBar from "./searchBar";
@@ -7,7 +7,7 @@ import UserList from "./userList";
 import GroupList from "./groupList";
 import ChatArea from "./chatArea";
 import CreateGroupForm from "./createGroupForm";
-import GroupManagement from './groupManagement';
+import GroupManagement from "./groupManagement";
 import "../../Styles/Messaging/chatList.css";
 
 const ParentComponent = () => {
@@ -51,20 +51,20 @@ const ParentComponent = () => {
   useEffect(() => {
     const fetchGroups = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/groups/${currentUser}`);
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/groups/${currentUser}`
+        );
         setGroups(response.data);
       } catch (error) {
         console.error("Error fetching groups:", error);
       }
     };
-  
+
     // Fetch groups only when the view mode is 'groups'
     if (viewMode === "groups") {
       fetchGroups();
     }
   }, [viewMode, currentUser]); // Include currentUser in the dependency array
-  
-  
 
   const handleShowPeople = () => {
     setViewMode("people");
@@ -161,8 +161,11 @@ const ParentComponent = () => {
           <ChatArea activeChat={activeUser.id} viewMode={activeUser.type} />
         )}{" "}
         {activeUser && activeUser.type === "groups" && showGroupManagement && (
-        <GroupManagement groupId={activeUser.id} onClose={() => setShowGroupManagement(false)} />
-      )}
+          <GroupManagement
+            groupId={activeUser.id}
+            onClose={() => setShowGroupManagement(false)}
+          />
+        )}
         {/* Adjusted to pass correct activeChat and viewMode */}
       </div>
     </div>

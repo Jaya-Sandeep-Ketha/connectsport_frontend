@@ -130,7 +130,8 @@ const Login = () => {
     setLoading(true);
 
     // Replace 'http://localhost:3000/login' with your actual login endpoint
-    const loginUrl = `${process.env.REACT_APP_API_URL}/login`;
+//    const loginUrl = `${process.env.REACT_APP_API_URL}/login`;
+    const loginUrl = `${process.env.REACT_APP_API_URL}/login`; //This is done for deployment test.
 
     const loginData = {
       userId: inputUsername,

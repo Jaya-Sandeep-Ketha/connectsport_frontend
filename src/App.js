@@ -3,8 +3,9 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Navigate,
+  Navigate
 } from "react-router-dom";
+import MainPage from './pages/Home_Page/homepage'; // Import the HomePage component
 import LoginForm from "./pages/Login_Register_Page/login_form";
 import RegisterForm from "./pages/Login_Register_Page/register_form";
 import HomePage from "./pages/Home_Page/index";
@@ -18,15 +19,17 @@ import "./styles.css";
 
 // A functional ProtectedRoute component
 const ProtectedRoute = ({ children }) => {
+  console.log("hello"); 
   const isAuthenticated = Boolean(localStorage.getItem("token")); // Check for authentication token
   return isAuthenticated ? children : <Navigate to="/login" replace />;
 };
 
 export default function App() {
   return (
-    <Router>
+    <Router>  
       <Routes>
-        <Route path="/login" element={<LoginForm />} />
+        <Route path="/" element={<MainPage />} />
+        <Route path="/login" element={<LoginForm />} /> 
         <Route path="/register" element={<RegisterForm />} />
         <Route
           path="/home/:userId"
@@ -52,6 +55,7 @@ export default function App() {
               <ChatApp />
             </ProtectedRoute>
           }
+          
         />
         <Route
           path="/:userId/friends"
