@@ -14,13 +14,38 @@ export const useAuth = () => {
         setCurrentUser(user);
     }, []);
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        // Send logout request to the backend
+        try {
+            const userId = currentUser; // Assuming you store userId in localStorage
+            console.log("Sending logout request for userId:", userId);
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/logout`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}` // Assuming token is stored in localStorage
+                },
+                body: JSON.stringify({ userId }) // Send userId if needed for the backend
+            });
+            
+            if (response.ok) {
+                console.log('Logout successful');
+            } else {
+                console.error('Logout failed');
+            }
+        } catch (error) {
+            console.error('Error during logout:', error);
+        }
+    
+        // Clear local storage and update state
         localStorage.removeItem('token');
+        localStorage.removeItem('userId'); // Ensure you remove userId too
         localStorage.removeItem('userName');
         setIsLoggedIn(false);
         setCurrentUser(null);
         navigate("/login");
     };
+
 
     return { isLoggedIn, currentUser, handleLogout };
 };

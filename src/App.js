@@ -16,6 +16,7 @@ import ChatApp from "./pages/Messaging";
 // import NotFoundPage from './Components/NotFoundPage'; // Ensure this component exists for handling 404 errors
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles.css";
+import NotificationsPage from "./pages/Notifications/notificationsPage";
 
 // A functional ProtectedRoute component
 const ProtectedRoute = ({ children }) => {
@@ -61,6 +62,14 @@ export default function App() {
           element={
             <ProtectedRoute>
               <FriendsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/:userId/notifications"
+          element={
+            <ProtectedRoute>
+              <NotificationsPage />
             </ProtectedRoute>
           }
         />
