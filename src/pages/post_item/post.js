@@ -14,7 +14,7 @@ function Post({ _id, author, content, image, deletePost, likesCount, updatePostL
   const handleLike = async () => {
     console.log(`Like is clicked for ${_id}`);
     try {
-      const response = await fetch(`http://localhost:3000/${currentUser}/posts/${_id}/like`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/${currentUser}/posts/${_id}/like`, {
         method: 'POST', 
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -42,7 +42,7 @@ function Post({ _id, author, content, image, deletePost, likesCount, updatePostL
     console.log(`Adding comment for post ${_id}`);
   
     try {
-      const response = await fetch(`http://localhost:3000/${currentUser}/posts/${_id}/comment`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/${currentUser}/posts/${_id}/comment`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

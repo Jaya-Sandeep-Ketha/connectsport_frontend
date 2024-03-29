@@ -129,6 +129,15 @@ function HomePage() {
     );
   };
 
+  const updatePostLikes = (updatedPost) => {
+    // Assume updatedPost contains the full updated post object, including its new likes count
+    setPosts(currentPosts =>
+      currentPosts.map(post =>
+        post._id === updatedPost._id ? updatedPost : post
+      )
+    );
+  };
+
   return (
     <div className="container-fluid">
       <Navbar
@@ -147,6 +156,7 @@ function HomePage() {
             currentUser={currentUser}
             onDeletePost={deletePost}
             onVote={handleVote}
+            updatePostLikes={updatePostLikes} 
           />
         </div>
         <div className="col-md-3">{/* Right sidebar content */}</div>
