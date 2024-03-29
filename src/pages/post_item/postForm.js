@@ -24,36 +24,6 @@ function PostForm({ onPostSubmit, onPollSubmit }) {
     setMedia(file);
   };
 
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   if (showPollCreator) {
-  //     if (!pollQuestion.trim() || pollOptions.some((option) => !option.trim()))
-  //       return;
-  //     onPollSubmit({
-  //       question: pollQuestion,
-  //       options: pollOptions.filter((option) => option.trim()),
-  //     });
-  //     setShowPollCreator(false);
-  //     setPollQuestion("");
-  //     setPollOptions(["", ""]);
-  //   } else {
-  //     if (!content.trim() && !media) return;
-  //     console.log({
-  //       content,
-  //       media,
-  //       tag: selectedSport || "No Sport Selected",
-  //     }); // Log the data being submitted
-  //     onPostSubmit({
-  //       content,
-  //       media,
-  //       tag: selectedSport || "No Sport Selected", // Ensure it's a string
-  //     });
-  //     setContent("");
-  //     setMedia(null);
-  //     setSelectedSport(""); // Reset the sport selection
-  //   }
-  // };
-
   const handleSubmit = (e) => {
     e.preventDefault();
     if (showPollCreator) {

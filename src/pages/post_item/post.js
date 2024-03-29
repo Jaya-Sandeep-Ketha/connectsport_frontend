@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import SocialButtons from '../../Components/common/socialButtons';
 import { useAuth } from "../../services/useAuth"; // Ensure the path is correct
 
-function Post({ id, author, content, image, deletePost, likesCount, updatePostLikes }) {
+function Post({ _id, author, content, image, deletePost, likesCount, updatePostLikes }) {
   const [comments, setComments] = useState([]);
   const [commentText, setCommentText] = useState('');
   const [showComments, setShowComments] = useState(false);
@@ -12,8 +12,9 @@ function Post({ id, author, content, image, deletePost, likesCount, updatePostLi
 
   // Handles the increment or decrement of likes
   const handleLike = async () => {
+    console.log(`Like is clicked for ${_id}`);
     try {
-      const response = await fetch(`http://localhost:3000/${currentUser}/posts/${id}/like`, {
+      const response = await fetch(`http://localhost:3000/${currentUser}/posts/${_id}/like`, {
         method: 'POST', 
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -30,18 +31,38 @@ function Post({ id, author, content, image, deletePost, likesCount, updatePostLi
     }
   };
 
-  const handleCommentSubmit = (e) => {
+  const handleCommentSubmit = async (e) => {
     e.preventDefault();
     if (!commentText.trim()) return;
     const newComment = {
       text: commentText,
-      commenter: currentUser ? currentUser.name : 'Anonymous', // Use the name from currentUser
+      commenter: currentUser ? currentUser.name : 'Anonymous', // Assuming currentUser has a name property
     };
-    // Here, typically, you would send this new comment to the backend to update the post's comments.
-    // For simplicity, I'm just updating the local state directly.
-    setComments([...comments, newComment]);
-    setCommentText('');
+  
+    console.log(`Adding comment for post ${_id}`);
+  
+    try {
+      const response = await fetch(`http://localhost:3000/${currentUser}/posts/${_id}/comment`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify(newComment),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to add comment');
+      }
+      const updatedPost = await response.json();
+      // Assuming the backend returns the updated post data including the new comment,
+      setComments(updatedPost.comments); // Assuming updatedPost.comments contains the updated list of comments
+      setCommentText('');
+    } catch (error) {
+      console.error(error.message);
+      setError(error.message);
+    }
   };
+  
 
   return (
     <div style={postStyle}>
@@ -50,7 +71,7 @@ function Post({ id, author, content, image, deletePost, likesCount, updatePostLi
         <button onClick={() => setShowOptions(!showOptions)} style={optionButtonStyle}>...</button>
         {showOptions && (
           <div className="post-options" style={optionsStyle}>
-            <button onClick={() => deletePost(id)} style={deleteButtonStyle}>Delete</button>
+            <button onClick={() => deletePost(_id)} style={deleteButtonStyle}>Delete</button>
           </div>
         )}
       </div>

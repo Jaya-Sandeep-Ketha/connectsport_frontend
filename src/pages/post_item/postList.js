@@ -1,20 +1,28 @@
 import React from 'react';
-import Post from './post'; // Ensure correct import path
-import PollDisplay from '../poll_item'; // Ensure correct import path
+import Post from './post'; // Correct import path
+import PollDisplay from '../poll_item'; // Correct import path
 
-// Enhanced PostList component to handle both regular posts and polls
 function PostList({ posts, currentUser, onVote }) {
   return (
     <div>
-      {posts.map((post) =>
-        post.type === 'poll' ? (
-          // Render PollDisplay for poll-type posts using the unique post.id
+      {posts.map((post) => {
+
+        return post.type === 'poll' ? (
           <PollDisplay key={post.id} poll={post} onVote={onVote} />
         ) : (
-          // Render Post for regular posts using the unique post.id
-          <Post key={post.id} author={post.userId} {...post} currentUser={currentUser} />
-        )
-      )}
+          <Post
+            key={post._id}
+            _id={post._id} // Explicitly passing _id to Post
+            author={post.userId}
+            content={post.content}
+            image={post.image}
+            deletePost={post.deletePost} // Assuming deletePost function is passed down or managed in Post
+            likesCount={post.likesCount}
+            updatePostLikes={post.updatePostLikes} // Assuming updatePostLikes function is passed down or managed in Post
+            currentUser={currentUser}
+          />
+        );
+      })}
     </div>
   );
 }
