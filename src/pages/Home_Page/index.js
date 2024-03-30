@@ -23,8 +23,11 @@ function HomePage() {
         });
         if (response.ok) {
           const data = await response.json();
-          console.log("Fetched posts:", data);
-          setPosts(data);
+          const postsWithLikes = data.map(post => ({
+            ...post,
+            likes: post.likes || [], // Ensures likes is always an array
+          }));
+          setPosts(postsWithLikes);
         } else {
           throw new Error("Failed to fetch posts");
         }
@@ -47,7 +50,6 @@ function HomePage() {
   // };
 
   const addNewPost = async (content, imageFile, tag) => {
-    console.log("Sent for posting:", { content, imageFile, tag });
     const formData = new FormData();
     //    formData.append("content", content);
     formData.append("content", content.toString()); // Convert to string to ensure no object is passed
@@ -138,6 +140,14 @@ function HomePage() {
     );
   };
 
+  const onCommentAdded = (updatedPost) => {
+    setPosts(currentPosts => 
+        currentPosts.map(post => 
+            post._id === updatedPost._id ? updatedPost : post
+        )
+    );
+};
+
   return (
     <div className="container-fluid">
       <Navbar
@@ -157,6 +167,7 @@ function HomePage() {
             onDeletePost={deletePost}
             onVote={handleVote}
             updatePostLikes={updatePostLikes} 
+            onCommentAdded={onCommentAdded}
           />
         </div>
         <div className="col-md-3">{/* Right sidebar content */}</div>
