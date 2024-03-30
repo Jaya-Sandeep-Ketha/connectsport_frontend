@@ -14,7 +14,6 @@ function Post({ _id, author, content, image, deletePost, likesCount, onCommentAd
     setLocalComments(comments);
 }, [comments]);
 
-
   // Handles the increment or decrement of likes
   const handleLike = async () => {
     try {
@@ -72,17 +71,17 @@ function Post({ _id, author, content, image, deletePost, likesCount, onCommentAd
     <div style={postStyle}>
       <div className="post-header">
         <h4>{author}</h4>
-        <button onClick={() => setShowOptions(!showOptions)} style={optionButtonStyle}>...</button>
+        <p>{content}</p>
+        {/* <button onClick={() => setShowOptions(!showOptions)} style={optionButtonStyle}>...</button>
         {showOptions && (
           <div style={optionsStyle}>
             <button onClick={() => deletePost(_id)} style={deleteButtonStyle}>Delete</button>
           </div>
-        )}
+        )} */}
       </div>
       {image && image.url && (
         <img src={image.url} alt="Post" style={imageStyle}/>
       )}
-      <p>{content}</p>
       <SocialButtons 
         onLike={handleLike} 
         likesCount={likesCount}

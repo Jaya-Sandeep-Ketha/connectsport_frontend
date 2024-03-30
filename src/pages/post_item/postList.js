@@ -13,7 +13,7 @@ function PostList({ posts, currentUser, onVote, updatePostLikes, onCommentAdded 
             key={post._id}
             _id={post._id} // Explicitly passing _id to Post
             author={post.userId}
-            content={post.content}
+            content={post.postDescription}
             image={post.image}
             deletePost={post.deletePost} // Assuming deletePost function is passed down or managed in Post
             likesCount={post.likes.length}
