@@ -1,0 +1,61 @@
+.pages-list {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .page-item {
+    border-bottom: 1px solid #e1e1e1;
+    padding: 20px;
+    transition: background-color 0.3s;
+  }
+  
+  .page-item:hover {
+    background-color: #f9f9f9;
+  }
+  
+  .page-item h2 {
+    margin: 0;
+    color: #333;
+    font-size: 24px;
+  }
+  
+  .page-item h2 a {
+    text-decoration: none;
+    color: #007bff;
+  }
+  
+  .page-item p {
+    color: #666;
+  }
+  
+  .follow-button, .donate-button {
+    background-color: #007bff;
+    border: none;
+    padding: 10px 20px;
+    color: white;
+    cursor: pointer;
+    margin-right: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  .follow-button:hover, .donate-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .page-detail {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+  }
+  
+  .page-detail h1 {
+    font-size: 32px;
+    color: #333;
+  }
+  
+  .page-detail p {
+    font-size: 18px;
+    color: #666;
+  }

@@ -3,9 +3,9 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Navigate
+  Navigate,
 } from "react-router-dom";
-import MainPage from './pages/Home_Page/homepage'; // Import the HomePage component
+import MainPage from "./pages/Home_Page/homepage"; // Import the HomePage component
 import LoginForm from "./pages/Login_Register_Page/login_form";
 import RegisterForm from "./pages/Login_Register_Page/register_form";
 import HomePage from "./pages/Home_Page/index";
@@ -17,6 +17,7 @@ import ChatApp from "./pages/Messaging";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles.css";
 import NotificationsPage from "./pages/Notifications/notificationsPage";
+import Pages from "./pages/Pages/pageList"
 
 // A functional ProtectedRoute component
 const ProtectedRoute = ({ children }) => {
@@ -26,10 +27,10 @@ const ProtectedRoute = ({ children }) => {
 
 export default function App() {
   return (
-    <Router>  
+    <Router>
       <Routes>
         <Route path="/" element={<MainPage />} />
-        <Route path="/login" element={<LoginForm />} /> 
+        <Route path="/login" element={<LoginForm />} />
         <Route path="/register" element={<RegisterForm />} />
         <Route
           path="/home/:userId"
@@ -55,7 +56,6 @@ export default function App() {
               <ChatApp />
             </ProtectedRoute>
           }
-          
         />
         <Route
           path="/:userId/friends"
@@ -70,6 +70,14 @@ export default function App() {
           element={
             <ProtectedRoute>
               <NotificationsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/:userId/pages"
+          element={
+            <ProtectedRoute>
+              <Pages />
             </ProtectedRoute>
           }
         />
