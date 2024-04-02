@@ -1,61 +1,95 @@
-.pages-list {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
+.container-fluid {
+  /* Your styles for the main container (if any) */
+}
+
+.cardCustom {
+  /* Your styles for the card (if any) */
+}
+
+.cardBody {
+  /* Your styles for the card body (if any) */
+}
+
+.cardTitle {
+  /* Your styles for the card title (if any) */
+}
+
+.pageItem {
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid #e1e1e1;
+  padding: 20px;
+  transition: background-color 0.3s;
+}
+
+.pageItem:hover {
+  background-color: #f9f9f9;
+}
+
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pageTitle {
+  margin: 0;
+  color: #333;
+  font-size: 24px;
+  /* Make sure the title does not wrap unless necessary */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pageLink {
+  text-decoration: none;
+  color: #007bff;
+  /* Handle long titles */
+  display: block;
+  max-width: 70%; /* Adjust this as needed */
+}
+
+.pageActions {
+  display: flex;
+  gap: 10px; /* Adjust the space between buttons as needed */
+  flex-shrink: 0; /* Prevent the buttons from shrinking */
+}
+
+.followButton,
+.donateButton {
+  background-color: #007bff;
+  border: none;
+  padding: 10px 20px;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.followButton:hover,
+.donateButton:hover {
+  background-color: #0056b3;
+}
+
+.pageDescription {
+  color: #666;
+  margin-top: 0.5rem; /* Spacing between title and description */
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .pageHeader {
+    flex-wrap: wrap;
   }
-  
-  .page-item {
-    border-bottom: 1px solid #e1e1e1;
-    padding: 20px;
-    transition: background-color 0.3s;
+  .pageTitle,
+  .pageLink {
+    /* Allow the title to wrap on smaller screens */
+    white-space: normal;
+    max-width: 100%;
   }
-  
-  .page-item:hover {
-    background-color: #f9f9f9;
+  .pageActions {
+    margin-top: 10px; /* Spacing between title and buttons on smaller screens */
+    justify-content: flex-end; /* Align buttons to the right on smaller screens */
   }
-  
-  .page-item h2 {
-    margin: 0;
-    color: #333;
-    font-size: 24px;
-  }
-  
-  .page-item h2 a {
-    text-decoration: none;
-    color: #007bff;
-  }
-  
-  .page-item p {
-    color: #666;
-  }
-  
-  .follow-button, .donate-button {
-    background-color: #007bff;
-    border: none;
-    padding: 10px 20px;
-    color: white;
-    cursor: pointer;
-    margin-right: 10px;
-    border-radius: 5px;
-    font-size: 16px;
-  }
-  
-  .follow-button:hover, .donate-button:hover {
-    background-color: #0056b3;
-  }
-  
-  .page-detail {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 20px;
-  }
-  
-  .page-detail h1 {
-    font-size: 32px;
-    color: #333;
-  }
-  
-  .page-detail p {
-    font-size: 18px;
-    color: #666;
-  }
+}

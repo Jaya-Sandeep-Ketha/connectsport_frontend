@@ -17,7 +17,8 @@ import ChatApp from "./pages/Messaging";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles.css";
 import NotificationsPage from "./pages/Notifications/notificationsPage";
-import Pages from "./pages/Pages/pageList"
+import Pages from "./pages/Pages/pageList";
+import PageDetail from "./pages/Pages/pageDetail";
 
 // A functional ProtectedRoute component
 const ProtectedRoute = ({ children }) => {
@@ -81,6 +82,15 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/pages/:id"
+          element={
+            <ProtectedRoute>
+              <PageDetail />
+            </ProtectedRoute>
+          }
+        />
+
         {/* <Route path="*" element={<NotFoundPage />} /> Uncomment for handling unmatched routes */}
       </Routes>
     </Router>

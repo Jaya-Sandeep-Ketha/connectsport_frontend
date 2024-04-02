@@ -5,23 +5,22 @@ import { useAuth } from "../../services/useAuth"; // Adjust the import path as n
 import { Button, Form, Dropdown, DropdownButton, Alert } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-
 const CreatePage = ({ onClose }) => {
-    const [formData, setFormData] = useState({
-      title: '',
-      description: '',
-      date: '',
-      type: '',
-      venue: '',
-      askForDonations: false, // New field to track donation request option
-      donationMobile: '', // Mobile number for donations
-    });
-  
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    date: "",
+    type: "",
+    venue: "",
+    askForDonations: false, // New field to track donation request option
+    donationMobile: "", // Mobile number for donations
+    contactNumber: "", // Mobile number to contact
+  });
 
   // State to manage form validation error messages
   const [validationError, setValidationError] = useState("");
 
-  const auth = useAuth(); // Adjust based on your authentication context/provider setup
+  const {currentUser} = useAuth(); // Adjust based on your authentication context/provider setup
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
@@ -64,12 +63,13 @@ const CreatePage = ({ onClose }) => {
       return;
     }
     try {
-      const response = await axios.post("/api/pages", {
+      console.log("Current User ID:", currentUser); 
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/createpage`, {
         ...formData,
-        createdBy: auth.currentUser?.id,
+        createdBy: currentUser,
       });
       onClose(); // Assuming onClose properly closes the modal
-      navigate(`/pages/${response.data._id}`); // Redirect to the newly created page
+      // navigate(`${process.env.REACT_APP_API_URL}/pages/${response.data._id}`); // Redirect to the newly created page
     } catch (error) {
       console.error("Error creating the page:", error);
     }
@@ -114,8 +114,8 @@ const CreatePage = ({ onClose }) => {
             onSelect={handleTypeSelect}
             required
           >
-            <Dropdown.Item eventKey="event">Event</Dropdown.Item>
-            <Dropdown.Item eventKey="organization">Organization</Dropdown.Item>
+            <Dropdown.Item eventKey="Event">Event</Dropdown.Item>
+            <Dropdown.Item eventKey="Organization">Organization</Dropdown.Item>
           </DropdownButton>
           {!formData.type && (
             <Form.Text className="text-muted">Type is required.</Form.Text>
@@ -123,7 +123,7 @@ const CreatePage = ({ onClose }) => {
         </Form.Group>
 
         {/* Conditional Fields for Events */}
-        {formData.type === "event" && (
+        {formData.type === "Event" && (
           <>
             <Form.Group className="mb-3">
               <Form.Label>Date</Form.Label>
@@ -132,7 +132,7 @@ const CreatePage = ({ onClose }) => {
                 name="date"
                 value={formData.date}
                 onChange={handleInputChange}
-                required={formData.type === "event"}
+                required={formData.type === "Event"}
               />
             </Form.Group>
             <Form.Group className="mb-3">
@@ -143,7 +143,7 @@ const CreatePage = ({ onClose }) => {
                 name="venue"
                 value={formData.venue}
                 onChange={handleInputChange}
-                required={formData.type === "event"}
+                required={formData.type === "Event"}
               />
             </Form.Group>
           </>
@@ -160,19 +160,35 @@ const CreatePage = ({ onClose }) => {
           />
         </Form.Group>
 
-        {/* Conditional Input for Mobile Number */}
         {formData.askForDonations && (
           <Form.Group className="mb-3">
             <Form.Label>Donation Mobile Number</Form.Label>
             <Form.Control
-              type="text"
+              type="tel"
               placeholder="Enter mobile number for donations"
               name="donationMobile"
               value={formData.donationMobile}
               onChange={handleInputChange}
+              pattern="\d{10}"
+              title="Donation mobile number should be a 10-digit number without spaces or special characters."
             />
           </Form.Group>
         )}
+
+        {/* Contact Number with Pattern Validation */}
+        <Form.Group className="mb-3">
+          <Form.Label>Contact Number</Form.Label>
+          <Form.Control
+            type="tel"
+            placeholder="Enter contact number"
+            name="contactNumber"
+            value={formData.contactNumber}
+            onChange={handleInputChange}
+            pattern="\d{10}"
+            title="Contact number should be a 10-digit number without spaces or special characters."
+            required
+          />
+        </Form.Group>
 
         <Button variant="primary" type="submit">
           Create Page
