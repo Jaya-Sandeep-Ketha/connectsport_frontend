@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import styles from "../../Styles/Pages/pageDetail.css"; // Update the path as needed
 import { useAuth } from "../../services/useAuth";
@@ -15,21 +15,38 @@ const PageDetail = () => {
   const { currentUser } = useAuth();
   const [isFollowing, setIsFollowing] = useState(false);
   const [posts, setPosts] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchPageDetails = async () => {
+    const fetchPageDetailsAndPosts = async () => {
       try {
-        const result = await axios.get(
-          `${process.env.REACT_APP_API_URL}/pages/${id}`
-        );
-        setPageDetails(result.data);
-        setIsFollowing(result.data.followers?.includes(currentUser));
+        // Fetch page details
+        const pageDetailsResult = await axios.get(`${process.env.REACT_APP_API_URL}/pages/${id}`);
+        if (pageDetailsResult.status === 200) {
+          setPageDetails(pageDetailsResult.data);
+
+          // Check if page detail includes followers to determine following status
+          setIsFollowing(pageDetailsResult.data.followers?.includes(currentUser));
+        }
+
+        // Fetch posts for the page
+        const postsResult = await axios.get(`${process.env.REACT_APP_API_URL}/posts`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`, // Adjust as per your auth setup
+          },
+        });
+        if (postsResult.status === 200) {
+          // Update pageDetails with posts
+          setPageDetails((prevDetails) => ({ ...prevDetails, posts: postsResult.data }));
+        }
       } catch (error) {
-        console.error("Error fetching page details:", error);
+        console.error("Error fetching page details or posts:", error);
+        navigate("/error"); // Adjust as per your routing setup
       }
     };
-    fetchPageDetails();
-  }, [id, currentUser]);
+
+    fetchPageDetailsAndPosts();
+  }, [id, currentUser, navigate]);
 
   const toggleFollow = async () => {
     try {
