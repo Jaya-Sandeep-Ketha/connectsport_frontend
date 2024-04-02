@@ -5,12 +5,16 @@ import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import styles from "../../Styles/Pages/pageDetail.css"; // Update the path as needed
 import { useAuth } from "../../services/useAuth";
 import Navbar from "../../Components/layout/navbar"; // Ensure this path is correct
+import PostForm from "../post_item/postForm"; // Make sure you have this component
+import Post from "../post_item/post";
 
 const PageDetail = () => {
-  const [pageDetails, setPageDetails] = useState({});
+  const [pageDetails, setPageDetails] = useState({ posts: [], title: "" });
+  const [showPostForm, setShowPostForm] = useState(false);
   const { id } = useParams();
   const { currentUser } = useAuth();
   const [isFollowing, setIsFollowing] = useState(false);
+  const [posts, setPosts] = useState([]);
 
   useEffect(() => {
     const fetchPageDetails = async () => {
@@ -33,7 +37,7 @@ const PageDetail = () => {
         `${process.env.REACT_APP_API_URL}/pages/${id}/toggle-follow`,
         { userId: currentUser } // Sending the userId in the request body
       );
-  
+
       if (response.status === 200) {
         setIsFollowing(response.data.isFollowing); // Update based on the server's response
         // Optionally, update the local state to reflect the new followers list
@@ -56,6 +60,58 @@ const PageDetail = () => {
     const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
+
+  // To handle post creation
+  const handleCreatePost = () => {
+    setShowPostForm(!showPostForm); // Toggle the visibility of the PostForm
+  };
+
+  // Example function to update likes for a post (adjust as needed)
+  const updatePostLikes = (updatedPost) => {
+    const updatedPosts = pageDetails.posts.map((post) =>
+      post._id === updatedPost._id ? updatedPost : post
+    );
+    setPageDetails({ ...pageDetails, posts: updatedPosts });
+  };
+
+  // Example function to add a comment to a post (adjust as needed)
+  const onCommentAdded = (postId, updatedPost) => {
+    const updatedPosts = pageDetails.posts.map((post) =>
+      post._id === postId ? updatedPost : post
+    );
+    setPageDetails({ ...pageDetails, posts: updatedPosts });
+  };
+
+  const handlePostSubmit = async (content, imageFile, tag) => {
+    const formData = new FormData();
+    //    formData.append("content", content);
+    formData.append("content", content.toString()); // Convert to string to ensure no object is passed
+    formData.append("tag", tag); // 'tag' should already be a string based on your form
+    formData.append("author", pageDetails.title || "Anonymous"); // Ensure this is correctly set based on your state
+    if (imageFile) {
+      formData.append("image", imageFile); // Only add if image is selected
+    }
+
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/newpost`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`, // Ensure this is correct
+          // Do not set 'Content-Type' here, let the browser set it
+        },
+        body: formData,
+      });
+      if (response.ok) {
+        const newPost = await response.json();
+        setPosts((prevPosts) => [newPost, ...prevPosts]);
+      } else {
+        throw new Error("Failed to create post");
+      }
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
+
 
   return (
     <div className={`container-fluid ${styles.container}`}>
@@ -115,18 +171,36 @@ const PageDetail = () => {
           </Card.Body>
         </Card>
         {/* Posts Section */}
+        <Row className="my-2">
+          <Col xs={12}>
+            <Button
+              variant="primary"
+              onClick={() => setShowPostForm(!showPostForm)}
+            >
+              {showPostForm ? "Cancel" : "Create Post"}
+            </Button>
+          </Col>
+        </Row>
+        {showPostForm && <PostForm onPostSubmit={handlePostSubmit} />}
+        {/* Posts Section */}
         <Row>
           <Col>
             <h2 className={styles.postsHeading}>Posts</h2>
-            {pageDetails.posts &&
-              pageDetails.posts.map((post) => (
-                <Card className="mb-3" key={post._id}>
-                  <Card.Body>
-                    <Card.Title>{post.title}</Card.Title>
-                    <Card.Text>{post.content}</Card.Text>
-                  </Card.Body>
-                </Card>
-              ))}
+            {pageDetails.posts && pageDetails.posts.map((post) => (
+              <Post
+                key={post._id}
+                _id={post._id}
+                author={pageDetails.title} // Ensure these props align with your Post component's expected props
+                content={post.content}
+                image={post.image}
+                deletePost={() => {}}
+                likesCount={post.likesCount}
+                comments={post.comments}
+                updatePostLikes={() => {}}
+                onCommentAdded={() => {}}
+                currentUser={currentUser}
+              />
+            ))}
           </Col>
         </Row>
       </Container>
