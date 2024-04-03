@@ -20,8 +20,10 @@ const PageDetail = () => {
   useEffect(() => {
     const fetchPageDetailsAndPosts = async () => {
       try {
+        console.log('Fetching page details and posts for ID:', id);
         // Fetch page details
         const pageDetailsResult = await axios.get(`${process.env.REACT_APP_API_URL}/pages/${id}`);
+        console.log('Page Details Result:', pageDetailsResult.data);
         if (pageDetailsResult.status === 200) {
           setPageDetails(pageDetailsResult.data);
 
@@ -30,14 +32,16 @@ const PageDetail = () => {
         }
 
         // Fetch posts for the page
-        const postsResult = await axios.get(`${process.env.REACT_APP_API_URL}/posts`, {
+        const postsResult = await axios.get(`${process.env.REACT_APP_API_URL}/pages/${id}/posts`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`, // Adjust as per your auth setup
           },
         });
         if (postsResult.status === 200) {
           // Update pageDetails with posts
-          setPageDetails((prevDetails) => ({ ...prevDetails, posts: postsResult.data }));
+          console.log('pageDetails.posts', pageDetails.posts, Array.isArray(pageDetails.posts));
+          setPageDetails((prevDetails) => ({ ...prevDetails, posts: Array.isArray(postsResult.data) ? postsResult.data : [] }));
+          // setPageDetails((prevDetails) => ({ ...prevDetails, posts: postsResult.data }));
         }
       } catch (error) {
         console.error("Error fetching page details or posts:", error);
@@ -104,7 +108,8 @@ const PageDetail = () => {
     //    formData.append("content", content);
     formData.append("content", content.toString()); // Convert to string to ensure no object is passed
     formData.append("tag", tag); // 'tag' should already be a string based on your form
-    formData.append("author", pageDetails.title || "Anonymous"); // Ensure this is correctly set based on your state
+    // formData.append("author", pageDetails.title || "Anonymous"); // Ensure this is correctly set based on your state
+    formData.append("author", id || "Anonymous"); 
     if (imageFile) {
       formData.append("image", imageFile); // Only add if image is selected
     }
@@ -207,7 +212,8 @@ const PageDetail = () => {
               <Post
                 key={post._id}
                 _id={post._id}
-                author={pageDetails.title} // Ensure these props align with your Post component's expected props
+                // author={pageDetails.title} // Ensure these props align with your Post component's expected props
+                author={id}
                 content={post.content}
                 image={post.image}
                 deletePost={() => {}}
