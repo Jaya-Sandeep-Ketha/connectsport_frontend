@@ -20,27 +20,41 @@ const PageDetail = () => {
   useEffect(() => {
     const fetchPageDetailsAndPosts = async () => {
       try {
-        console.log('Fetching page details and posts for ID:', id);
+        console.log("Fetching page details and posts for ID:", id);
         // Fetch page details
-        const pageDetailsResult = await axios.get(`${process.env.REACT_APP_API_URL}/pages/${id}`);
-        console.log('Page Details Result:', pageDetailsResult.data);
+        const pageDetailsResult = await axios.get(
+          `${process.env.REACT_APP_API_URL}/pages/${id}`
+        );
+        console.log("Page Details Result:", pageDetailsResult.data);
         if (pageDetailsResult.status === 200) {
           setPageDetails(pageDetailsResult.data);
 
           // Check if page detail includes followers to determine following status
-          setIsFollowing(pageDetailsResult.data.followers?.includes(currentUser));
+          setIsFollowing(
+            pageDetailsResult.data.followers?.includes(currentUser)
+          );
         }
 
         // Fetch posts for the page
-        const postsResult = await axios.get(`${process.env.REACT_APP_API_URL}/pages/${id}/posts`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`, // Adjust as per your auth setup
-          },
-        });
+        const postsResult = await axios.get(
+          `${process.env.REACT_APP_API_URL}/pages/${id}/posts`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`, // Adjust as per your auth setup
+            },
+          }
+        );
         if (postsResult.status === 200) {
           // Update pageDetails with posts
-          console.log('pageDetails.posts', pageDetails.posts, Array.isArray(pageDetails.posts));
-          setPageDetails((prevDetails) => ({ ...prevDetails, posts: Array.isArray(postsResult.data) ? postsResult.data : [] }));
+          console.log(
+            "pageDetails.posts",
+            pageDetails.posts,
+            Array.isArray(pageDetails.posts)
+          );
+          setPageDetails((prevDetails) => ({
+            ...prevDetails,
+            posts: Array.isArray(postsResult.data) ? postsResult.data : [],
+          }));
           // setPageDetails((prevDetails) => ({ ...prevDetails, posts: postsResult.data }));
         }
       } catch (error) {
@@ -81,18 +95,40 @@ const PageDetail = () => {
     const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
+  
+  const handleShare = () => {
+    console.log("Sharing page", { userId: currentUser, pageId: id }); // Log the data being sent
+    axios.post(`${process.env.REACT_APP_API_URL}/sharePage`, {
+      userId: currentUser, // Assuming you have the current user's ID
+      pageId: id, // The ID of the page being shared, from useParams()
+    }, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`, // If your endpoint requires authentication
+      },
+    })
+    .then(response => {
+      console.log("Page shared successfully response:", response); // Log success response
+      alert("Page shared successfully!"); // Or any other feedback mechanism
+    })
+    .catch(error => {
+      console.error("Failed to share the page:", error);
+      // Handle errors (e.g., show an error message)
+    });
+  };
+  
 
   // To handle post creation
   const handleCreatePost = () => {
     setShowPostForm(!showPostForm); // Toggle the visibility of the PostForm
   };
 
-  // Example function to update likes for a post (adjust as needed)
   const updatePostLikes = (updatedPost) => {
-    const updatedPosts = pageDetails.posts.map((post) =>
-      post._id === updatedPost._id ? updatedPost : post
+    // Assume updatedPost contains the full updated post object, including its new likes count
+    setPosts(currentPosts =>
+      currentPosts.map(post =>
+        post._id === updatedPost._id ? updatedPost : post
+      )
     );
-    setPageDetails({ ...pageDetails, posts: updatedPosts });
   };
 
   // Example function to add a comment to a post (adjust as needed)
@@ -109,7 +145,7 @@ const PageDetail = () => {
     formData.append("content", content.toString()); // Convert to string to ensure no object is passed
     formData.append("tag", tag); // 'tag' should already be a string based on your form
     // formData.append("author", pageDetails.title || "Anonymous"); // Ensure this is correctly set based on your state
-    formData.append("author", id || "Anonymous"); 
+    formData.append("author", id || "Anonymous");
     if (imageFile) {
       formData.append("image", imageFile); // Only add if image is selected
     }
@@ -133,7 +169,6 @@ const PageDetail = () => {
       console.error(error.message);
     }
   };
-
 
   return (
     <div className={`container-fluid ${styles.container}`}>
@@ -175,21 +210,22 @@ const PageDetail = () => {
                 <strong>Contact Number:</strong> {pageDetails.contactNumber}
               </Col>
             </Row>
-            {pageDetails.askForDonations && (
-              <Row className="my-2">
-                <Col xs={12} sm={6} md={4} lg={2}>
-                  <Button
-                    variant={isFollowing ? "success" : "primary"}
-                    onClick={toggleFollow}
-                    className="mr-2"
-                    disabled={!currentUser} // Disable button if there is no logged-in user
-                  >
-                    {isFollowing ? "Following" : "Follow"}
-                  </Button>
+            <Row className="my-2">
+              <Col xs={12} sm={6} md={4} lg={2}>
+                <Button
+                  variant={isFollowing ? "success" : "primary"}
+                  onClick={toggleFollow}
+                  className="mr-2"
+                  disabled={!currentUser} // Disable button if there is no logged-in user
+                >
+                  {isFollowing ? "Following" : "Follow"}
+                </Button>
+                {pageDetails.askForDonations && (
                   <Button variant="success">Donate</Button>
-                </Col>
-              </Row>
-            )}
+                )}
+                <Button variant="info" className="ml-2" onClick={handleShare}>Share</Button>
+              </Col>
+            </Row>
           </Card.Body>
         </Card>
         {/* Posts Section */}
@@ -208,22 +244,23 @@ const PageDetail = () => {
         <Row>
           <Col>
             <h2 className={styles.postsHeading}>Posts</h2>
-            {pageDetails.posts && pageDetails.posts.map((post) => (
-              <Post
-                key={post._id}
-                _id={post._id}
-                // author={pageDetails.title} // Ensure these props align with your Post component's expected props
-                author={id}
-                content={post.content}
-                image={post.image}
-                deletePost={() => {}}
-                likesCount={post.likesCount}
-                comments={post.comments}
-                updatePostLikes={() => {}}
-                onCommentAdded={() => {}}
-                currentUser={currentUser}
-              />
-            ))}
+            {pageDetails.posts &&
+              pageDetails.posts.map((post) => (
+                <Post
+                  key={post._id}
+                  _id={post._id}
+                  // author={pageDetails.title} // Ensure these props align with your Post component's expected props
+                  author={id}
+                  content={post.content}
+                  image={post.image}
+                  deletePost={() => {}}
+                  likesCount={post.likesCount}
+                  comments={post.comments}
+                  updatePostLikes={updatePostLikes}
+                  onCommentAdded={onCommentAdded}
+                  currentUser={currentUser}
+                />
+              ))}
           </Col>
         </Row>
       </Container>
