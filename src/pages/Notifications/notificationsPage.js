@@ -7,7 +7,8 @@ const NotificationsPage = () => {
   const [notifications, setNotifications] = useState([]);
   const { currentUser } = useAuth(); // currentUser is a userId string
 
-  useEffect(() => {
+  // Extract the notification fetching logic into its own function
+  const fetchNotifications = () => {
     if (currentUser) {
       fetch(`${process.env.REACT_APP_API_URL}/notifications/${currentUser}`)
         .then((response) => response.json())
@@ -17,8 +18,26 @@ const NotificationsPage = () => {
         })
         .catch(console.error);
     }
+  };
+
+  // useEffect(() => {
+  //   if (currentUser) {
+  //     fetch(`${process.env.REACT_APP_API_URL}/notifications/${currentUser}`)
+  //       .then((response) => response.json())
+  //       .then((data) => {
+  //         console.log("Fetched notifications:", data); // Check the structure of fetched data
+  //         setNotifications(data);
+  //       })
+  //       .catch(console.error);
+  //   }
+  // }, [currentUser]);
+
+  // Call fetchNotifications on component mount and when currentUser changes
+  useEffect(() => {
+    fetchNotifications();
   }, [currentUser]);
 
+  
   const handleMarkAsRead = (notificationId) => {
     console.log(`Marking notification ${notificationId} as read`);
     fetch(`${process.env.REACT_APP_API_URL}/mark-notification-as-read`, {
@@ -48,7 +67,7 @@ const NotificationsPage = () => {
 
   const handleDelete = (notificationId) => {
     console.log(`Deleting notification ${notificationId}`);
-    fetch(`${process.env.REACT_APP_API_URL}/delete-notification`, {
+    fetch(`${process.env.REACT_APP_API_URL}/notifications/delete`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userId: currentUser, notificationId }),
@@ -57,19 +76,13 @@ const NotificationsPage = () => {
         if (!response.ok) {
           throw new Error("Failed to delete notification");
         }
-        return response.json();
-      })
-      .then(() => {
-        console.log(`Notification ${notificationId} deleted`);
-        // Optimistically remove the notification from the state
-        setNotifications(
-          notifications.filter(
-            (notification) => notification.id !== notificationId
-          )
-        );
+        // setNotifications(notifications.filter((notification) => notification.id !== notificationId));
+        fetchNotifications();
       })
       .catch(console.error);
-  };
+};
+
+
   return (
     <div className={`container-fluid ${styles.container}`}>
       <Navbar />
