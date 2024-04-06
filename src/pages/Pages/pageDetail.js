@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
-import { Container, Row, Col, Card, Button } from "react-bootstrap";
+import { Container, Row, Col, Card, Button, Alert, Spinner } from "react-bootstrap";
 import styles from "../../Styles/Pages/pageDetail.css"; // Update the path as needed
 import { useAuth } from "../../services/useAuth";
 import Navbar from "../../Components/layout/navbar"; // Ensure this path is correct
 import PostForm from "../post_item/postForm"; // Make sure you have this component
 import Post from "../post_item/post";
+import MockPaymentPortal from "./mockPaymentPortal";
 
 const PageDetail = () => {
   const [pageDetails, setPageDetails] = useState({ posts: [], title: "" });
@@ -15,7 +16,11 @@ const PageDetail = () => {
   const { currentUser } = useAuth();
   const [isFollowing, setIsFollowing] = useState(false);
   const [posts, setPosts] = useState([]);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
   const navigate = useNavigate();
+
 
   useEffect(() => {
     const fetchPageDetailsAndPosts = async () => {
@@ -95,27 +100,31 @@ const PageDetail = () => {
     const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
-  
+
   const handleShare = () => {
     console.log("Sharing page", { userId: currentUser, pageId: id }); // Log the data being sent
-    axios.post(`${process.env.REACT_APP_API_URL}/sharePage`, {
-      userId: currentUser, // Assuming you have the current user's ID
-      pageId: id, // The ID of the page being shared, from useParams()
-    }, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`, // If your endpoint requires authentication
-      },
-    })
-    .then(response => {
-      console.log("Page shared successfully response:", response); // Log success response
-      alert("Page shared successfully!"); // Or any other feedback mechanism
-    })
-    .catch(error => {
-      console.error("Failed to share the page:", error);
-      // Handle errors (e.g., show an error message)
-    });
+    axios
+      .post(
+        `${process.env.REACT_APP_API_URL}/sharePage`,
+        {
+          userId: currentUser, // Assuming you have the current user's ID
+          pageId: id, // The ID of the page being shared, from useParams()
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`, // If your endpoint requires authentication
+          },
+        }
+      )
+      .then((response) => {
+        console.log("Page shared successfully response:", response); // Log success response
+        alert("Page shared successfully!"); // Or any other feedback mechanism
+      })
+      .catch((error) => {
+        console.error("Failed to share the page:", error);
+        // Handle errors (e.g., show an error message)
+      });
   };
-  
 
   // To handle post creation
   const handleCreatePost = () => {
@@ -124,8 +133,8 @@ const PageDetail = () => {
 
   const updatePostLikes = (updatedPost) => {
     // Assume updatedPost contains the full updated post object, including its new likes count
-    setPosts(currentPosts =>
-      currentPosts.map(post =>
+    setPosts((currentPosts) =>
+      currentPosts.map((post) =>
         post._id === updatedPost._id ? updatedPost : post
       )
     );
@@ -170,10 +179,54 @@ const PageDetail = () => {
     }
   };
 
+  // Donation related functionalities
+  const handlePaymentSuccess = async (paymentDetails) => {
+    setIsLoading(true);
+    setSuccessMessage('');
+    // Assuming `currentUser` contains user's ID or username needed by the backend
+    const donationData = {
+      userId: currentUser, // Adjust according to your `currentUser` object structure
+      pageId: id,
+      amount: paymentDetails.amount,
+      cardDetails: {
+        cardNumber: paymentDetails.cardNumber,
+        expiryDate: paymentDetails.expiryDate,
+        cvv: paymentDetails.cvv,
+      },
+    };
+
+    try {
+      console.log(`Attempting to process donation for user ${currentUser} on page ${id} with amount ${paymentDetails.amount}`);
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/donate`, donationData);
+      if (response.status === 200) {
+        setSuccessMessage('Your donation has been processed successfully!');
+        // setShowPaymentModal(false);
+      } else {
+        setSuccessMessage('Failed to process donation.');
+        // alert("Failed to process donation.");
+      }
+    } catch (error) {
+      console.error("Error processing donation:", error.response ? error.response.data : error);
+      setSuccessMessage('An error occurred while processing your donation.');
+    }
+    setIsLoading(false);
+    setShowPaymentModal(false);
+  };
+
   return (
     <div className={`container-fluid ${styles.container}`}>
       <Navbar />
       <Container>
+      {isLoading && (
+          <Row>
+            <Col className="text-center">
+              <Spinner animation="border" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </Spinner>
+            </Col>
+          </Row>
+        )}
+        {successMessage && <Alert variant="success">{successMessage}</Alert>}
         <Card className="my-4">
           <Card.Body>
             <Card.Title className={styles.pageTitle}>
@@ -221,9 +274,23 @@ const PageDetail = () => {
                   {isFollowing ? "Following" : "Follow"}
                 </Button>
                 {pageDetails.askForDonations && (
-                  <Button variant="success">Donate</Button>
+                  <>
+                    <Button
+                      variant="success"
+                      onClick={() => setShowPaymentModal(true)}
+                    >
+                      Donate
+                    </Button>
+                    <MockPaymentPortal
+                      show={showPaymentModal}
+                      handleClose={() => setShowPaymentModal(false)}
+                      handlePaymentSuccess={handlePaymentSuccess}
+                    />
+                  </>
                 )}
-                <Button variant="info" className="ml-2" onClick={handleShare}>Share</Button>
+                <Button variant="info" className="ml-2" onClick={handleShare}>
+                  Share
+                </Button>
               </Col>
             </Row>
           </Card.Body>
