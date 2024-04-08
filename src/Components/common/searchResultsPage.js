@@ -2,7 +2,10 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import ProfileModal from "../features/profileModel";
+import Navbar from "../../Components/layout/navbar";
+import { useAuth } from "../../services/useAuth";
 import "../../Styles/HomePage/search.css";
+import SearchComponent from "../../Components/common/searchComponent";
 
 const SearchResultsPage = () => {
   const { search } = useLocation();
@@ -11,6 +14,8 @@ const SearchResultsPage = () => {
   const [error, setError] = useState("");
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const { isLoggedIn, currentUser, handleLogout } = useAuth();
+  const [searchInput, setSearchInput] = useState("");
 
   useEffect(() => {
     const fetchSearchResults = async () => {
@@ -56,7 +61,15 @@ const SearchResultsPage = () => {
     setSelectedUser(null); // Clear the selected user
   };
 
-  return (
+  return ( 
+  <div className="container-fluid">
+  <Navbar
+    user={currentUser}
+    isLoggedIn={isLoggedIn}
+    onLogout={handleLogout}
+    onSearchChange={setSearchInput} // Pass setSearchInput as a prop
+  />
+  {searchInput && <SearchComponent />}
     <div className="search-results-page">
       <h2>Search Results</h2>
       <section>
@@ -118,6 +131,7 @@ const SearchResultsPage = () => {
       {showProfileModal && selectedUser && (
         <ProfileModal userId={selectedUser._id} onClose={handleCloseModal} />
       )}
+    </div>
     </div>
   );
 };

@@ -6,11 +6,14 @@ import CreatePage from "./createPage"; // Ensure this path is correct
 import styles from "../../Styles/Pages/page.css"; // Ensure the path is correct
 import "bootstrap/dist/css/bootstrap.min.css";
 import Navbar from "../../Components/layout/navbar"; // Ensure this path is correct
+import SearchComponent from "../../Components/common/searchComponent";
+import { useAuth } from "../../services/useAuth";
 
 const PagesList = () => {
   const [pages, setPages] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  
+  const { isLoggedIn, currentUser, handleLogout } = useAuth();
+  const [searchInput, setSearchInput] = useState("");
 
   useEffect(() => {
     const fetchPages = async () => {
@@ -32,7 +35,13 @@ const PagesList = () => {
 
   return (
     <div className={`container-fluid ${styles.container}`}>
-      <Navbar />
+      <Navbar
+        user={currentUser}
+        isLoggedIn={isLoggedIn}
+        onLogout={handleLogout}
+        onSearchChange={setSearchInput} // Pass setSearchInput as a prop
+      />
+      {searchInput && <SearchComponent />}
       <div className={`card ${styles.cardCustom}`}>
         <div className={`card-body ${styles.cardBody}`}>
           <div className="d-flex justify-content-between align-items-center">

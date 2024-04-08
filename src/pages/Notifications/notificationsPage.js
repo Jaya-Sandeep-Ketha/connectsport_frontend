@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../services/useAuth";
 import Navbar from "../../Components/layout/navbar";
-import styles from "../../Styles/Notifications/notifications.css"; // Import the CSS module
+import styles from "../../Styles/Notifications/notifications.css";
+import SearchComponent from "../../Components/common/searchComponent";
 
 const NotificationsPage = () => {
   const [notifications, setNotifications] = useState([]);
-  const { currentUser } = useAuth(); // currentUser is a userId string
+  const { isLoggedIn, currentUser, handleLogout } = useAuth();
+  const [searchInput, setSearchInput] = useState("");
 
   // Extract the notification fetching logic into its own function
   const fetchNotifications = () => {
@@ -37,7 +39,6 @@ const NotificationsPage = () => {
     fetchNotifications();
   }, [currentUser]);
 
-  
   const handleMarkAsRead = (notificationId) => {
     console.log(`Marking notification ${notificationId} as read`);
     fetch(`${process.env.REACT_APP_API_URL}/mark-notification-as-read`, {
@@ -80,12 +81,17 @@ const NotificationsPage = () => {
         fetchNotifications();
       })
       .catch(console.error);
-};
-
+  };
 
   return (
     <div className={`container-fluid ${styles.container}`}>
-      <Navbar />
+      <Navbar
+        user={currentUser}
+        isLoggedIn={isLoggedIn}
+        onLogout={handleLogout}
+        onSearchChange={setSearchInput} // Pass setSearchInput as a prop
+      />
+      {searchInput && <SearchComponent />}
       <div className="row justify-content-center">
         <div className="col-md-8">
           <div className={`card ${styles.cardCustom}`}>

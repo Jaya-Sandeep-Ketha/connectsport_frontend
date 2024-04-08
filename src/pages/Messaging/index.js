@@ -9,6 +9,7 @@ import ChatArea from "./chatArea";
 import CreateGroupForm from "./createGroupForm";
 import GroupManagement from "./groupManagement";
 import "../../Styles/Messaging/chatList.css";
+import SearchComponent from "../../Components/common/searchComponent";
 
 const ParentComponent = () => {
   const [viewMode, setViewMode] = useState("people");
@@ -16,9 +17,10 @@ const ParentComponent = () => {
   const [friends, setFriends] = useState([]);
   const [groups, setGroups] = useState([]);
   const [activeUser, setActiveUser] = useState(null);
-  const [searchInput, setSearchInput] = useState("");
+  const [searchMsgInput, setsearchMsgInput] = useState("");
   const [showGroupManagement, setShowGroupManagement] = useState(false);
-  const { currentUser } = useAuth();
+  const { isLoggedIn, currentUser, handleLogout } = useAuth();
+  const [searchInput, setSearchInput] = useState("");
 
   useEffect(() => {
     if (currentUser) {
@@ -98,11 +100,11 @@ const ParentComponent = () => {
   const filteredFriends = friends.filter(
     (friend) =>
       friend.userId &&
-      friend.userId.toLowerCase().includes(searchInput.toLowerCase())
+      friend.userId.toLowerCase().includes(searchMsgInput.toLowerCase())
   );
 
   const filteredGroups = groups.filter((group) =>
-    group.name.toLowerCase().includes(searchInput.toLowerCase())
+    group.name.toLowerCase().includes(searchMsgInput.toLowerCase())
   );
 
   const handleManageGroup = (groupName) => {
@@ -113,11 +115,17 @@ const ParentComponent = () => {
 
   return (
     <div className="container-fluid">
-      <Navbar />
+      <Navbar
+        user={currentUser}
+        isLoggedIn={isLoggedIn}
+        onLogout={handleLogout}
+        onSearchChange={setSearchInput} // Pass setsearchMsgInput as a prop
+      />
+      {searchInput && <SearchComponent />}
       <div className="app-container">
         <div className="sidebar">
           <SearchBar
-            onSearchChange={setSearchInput}
+            onSearchChange={setsearchMsgInput}
             onShowPeople={handleShowPeople}
             onShowGroups={handleShowGroups}
           />

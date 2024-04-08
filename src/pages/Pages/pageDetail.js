@@ -1,26 +1,35 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
-import { Container, Row, Col, Card, Button, Alert, Spinner } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Button,
+  Alert,
+  Spinner,
+} from "react-bootstrap";
 import styles from "../../Styles/Pages/pageDetail.css"; // Update the path as needed
 import { useAuth } from "../../services/useAuth";
 import Navbar from "../../Components/layout/navbar"; // Ensure this path is correct
 import PostForm from "../post_item/postForm"; // Make sure you have this component
 import Post from "../post_item/post";
 import MockPaymentPortal from "./mockPaymentPortal";
+import SearchComponent from "../../Components/common/searchComponent";
 
 const PageDetail = () => {
   const [pageDetails, setPageDetails] = useState({ posts: [], title: "" });
   const [showPostForm, setShowPostForm] = useState(false);
   const { id } = useParams();
-  const { currentUser } = useAuth();
+  const { isLoggedIn, currentUser, handleLogout } = useAuth();
   const [isFollowing, setIsFollowing] = useState(false);
   const [posts, setPosts] = useState([]);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState("");
+  const [searchInput, setSearchInput] = useState("");
   const navigate = useNavigate();
-
 
   useEffect(() => {
     const fetchPageDetailsAndPosts = async () => {
@@ -182,7 +191,7 @@ const PageDetail = () => {
   // Donation related functionalities
   const handlePaymentSuccess = async (paymentDetails) => {
     setIsLoading(true);
-    setSuccessMessage('');
+    setSuccessMessage("");
     // Assuming `currentUser` contains user's ID or username needed by the backend
     const donationData = {
       userId: currentUser, // Adjust according to your `currentUser` object structure
@@ -196,18 +205,26 @@ const PageDetail = () => {
     };
 
     try {
-      console.log(`Attempting to process donation for user ${currentUser} on page ${id} with amount ${paymentDetails.amount}`);
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/donate`, donationData);
+      console.log(
+        `Attempting to process donation for user ${currentUser} on page ${id} with amount ${paymentDetails.amount}`
+      );
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL}/donate`,
+        donationData
+      );
       if (response.status === 200) {
-        setSuccessMessage('Your donation has been processed successfully!');
+        setSuccessMessage("Your donation has been processed successfully!");
         // setShowPaymentModal(false);
       } else {
-        setSuccessMessage('Failed to process donation.');
+        setSuccessMessage("Failed to process donation.");
         // alert("Failed to process donation.");
       }
     } catch (error) {
-      console.error("Error processing donation:", error.response ? error.response.data : error);
-      setSuccessMessage('An error occurred while processing your donation.');
+      console.error(
+        "Error processing donation:",
+        error.response ? error.response.data : error
+      );
+      setSuccessMessage("An error occurred while processing your donation.");
     }
     setIsLoading(false);
     setShowPaymentModal(false);
@@ -215,9 +232,15 @@ const PageDetail = () => {
 
   return (
     <div className={`container-fluid ${styles.container}`}>
-      <Navbar />
+      <Navbar
+        user={currentUser}
+        isLoggedIn={isLoggedIn}
+        onLogout={handleLogout}
+        onSearchChange={setSearchInput} // Pass setSearchInput as a prop
+      />
+      {searchInput && <SearchComponent />}
       <Container>
-      {isLoading && (
+        {isLoading && (
           <Row>
             <Col className="text-center">
               <Spinner animation="border" role="status">

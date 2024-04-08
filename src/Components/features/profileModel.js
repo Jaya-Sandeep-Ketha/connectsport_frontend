@@ -49,7 +49,7 @@ const ProfileModal = ({ userId, onClose }) => {
             <ListGroup.Item><strong>UserID:</strong> {profile.userId}</ListGroup.Item>
             <ListGroup.Item><strong>Name:</strong> {profile.firstName} {profile.lastName}</ListGroup.Item>
             <ListGroup.Item><strong>Gender:</strong> {profile.gender}</ListGroup.Item>
-            {profile.emailPublic && <ListGroup.Item><strong>Email:</strong> {profile.emailId}</ListGroup.Item>}
+            {profile.emailPublic && <ListGroup.Item><strong>Email:</strong> {profile.email}</ListGroup.Item>}
             <ListGroup.Item><strong>Fav Sports:</strong> {profile.favoriteSports.join(", ")}</ListGroup.Item>
             <ListGroup.Item><strong>Bio:</strong> {profile.bio}</ListGroup.Item>
           </ListGroup>

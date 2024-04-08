@@ -25,9 +25,6 @@ const Navbar = ({ onSearchChange }) => {
           <img src={Logo} alt="Company Logo" className="navbar-logo" />
           <span className="navbar-brand-name">ConnectSport</span>
         </a>
-        <button type="button" className="navbar-toggler">
-          <span className="navbar-toggler-icon"></span>
-        </button>
       </div>
 
       <div className="navbar-search">

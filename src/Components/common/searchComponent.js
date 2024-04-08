@@ -1,7 +1,8 @@
-// SearchComponent.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../Styles/HomePage/searchComponent.css';
+import { Button, InputGroup, FormControl, ButtonGroup } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const SearchComponent = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -19,29 +20,33 @@ const SearchComponent = () => {
   const handleSearch = () => {
     console.log(`Navigating to search results with query: ${searchQuery} and filter: ${activeFilter}`);
     navigate(`/search-results?query=${encodeURIComponent(searchQuery)}&filter=${activeFilter}`);
-  };  
+  };
 
   return (
-    <div className="search-container">
-      <input
-        type="text"
-        placeholder="Search..."
-        value={searchQuery}
-        onChange={handleSearchChange}
-        className="search-input"
-      />
-      <div className="filter-options">
+    <div className="search-container my-3">
+      <InputGroup className="mb-3">
+        <FormControl
+          placeholder="Search..."
+          aria-label="Search"
+          value={searchQuery}
+          onChange={handleSearchChange}
+        />
+        <Button variant="outline-secondary" onClick={handleSearch}>
+          Search
+        </Button>
+      </InputGroup>
+
+      <ButtonGroup>
         {['All', 'Posts', 'People', 'Pages'].map((filter) => (
-          <button
+          <Button
             key={filter}
-            className={`filter-btn ${activeFilter === filter ? 'active' : ''}`}
+            variant={activeFilter === filter ? 'primary' : 'secondary'}
             onClick={() => selectFilter(filter)}
           >
             {filter}
-          </button>
+          </Button>
         ))}
-      </div>
-      <button onClick={handleSearch}>Search</button>
+      </ButtonGroup>
     </div>
   );
 };

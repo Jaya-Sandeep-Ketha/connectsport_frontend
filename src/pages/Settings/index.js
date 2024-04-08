@@ -4,13 +4,14 @@ import { useAuth } from "../../services/useAuth";
 import Navbar from "../../Components/layout/navbar"; // Ensure correct import path
 import BackgroundImage from "../../assets/images/background.jpg"; // Ensure this path is correct
 import { useNavigate } from "react-router-dom"; // Ensure this is correctly imported
+import SearchComponent from "../../Components/common/searchComponent";
 
 const SettingsPage = () => {
   const navigate = useNavigate();
   const { isLoggedIn, currentUser, handleLogout } = useAuth();
   const [searchInput, setSearchInput] = useState("");
   const [emailPublic, setEmailPublic] = useState(false);
-  const [error, setError] = useState(""); // Add error state for handling fetch/update errors
+  const [error, setError] = useState("");
 
   const [profile, setProfile] = useState({
     userId: "",
@@ -32,28 +33,6 @@ const SettingsPage = () => {
     }
   }, [isLoggedIn, currentUser]);
 
-  // if (loading) {
-  //   return <div>Loading...</div>; // Loading indicator
-  // }
-
-  // First useEffect for redirect and initializing state from currentUser
-  // useEffect(() => {
-  //   if (!isLoggedIn) {
-  //     navigate("/login");
-  //   } else if (currentUser) {
-  //     // This sets initial state from currentUser, which is important for your auth flow
-  //     setProfile((prevProfile) => ({
-  //       ...prevProfile,
-  //       userId: currentUser.userId || currentUser, // Adjust based on your data structure
-  //       bio: currentUser.bio || "",
-  //       email: currentUser.email || "",
-  //     }));
-  //     setLoading(false); // Important to stop loading once data is set
-  //   }
-  // }, [isLoggedIn, currentUser, navigate]);
-  
-
-  // Second useEffect for fetching detailed profile data
   useEffect(() => {
     if (isLoggedIn && currentUser) {
       const fetchProfile = async () => {
@@ -170,7 +149,13 @@ const SettingsPage = () => {
 
   return (
     <div className="container-fluid">
-      <Navbar onSearchChange={setSearchInput} />
+      <Navbar
+        user={currentUser}
+        isLoggedIn={isLoggedIn}
+        onLogout={handleLogout}
+        onSearchChange={setSearchInput} // Pass setSearchInput as a prop
+      />
+      {searchInput && <SearchComponent />}
       <div
         className="settings__wrapper"
         style={{ backgroundImage: `url(${BackgroundImage})` }}
