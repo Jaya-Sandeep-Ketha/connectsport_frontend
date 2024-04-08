@@ -1,11 +1,12 @@
+// SearchComponent.jsx
 import React, { useState } from 'react';
-import '../../Styles/HomePage/searchComponent.css'; // Assume you have a CSS file for styling
+import { useNavigate } from 'react-router-dom';
+import '../../Styles/HomePage/searchComponent.css';
 
 const SearchComponent = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('All');
-
-  const filters = ['All', 'Posts', 'People', 'Photos', 'Videos', 'Pages', 'Groups'];
+  const navigate = useNavigate();
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -13,13 +14,24 @@ const SearchComponent = () => {
 
   const selectFilter = (filter) => {
     setActiveFilter(filter);
-    // Optionally, trigger a search or filter operation here
   };
+
+  const handleSearch = () => {
+    console.log(`Navigating to search results with query: ${searchQuery} and filter: ${activeFilter}`);
+    navigate(`/search-results?query=${encodeURIComponent(searchQuery)}&filter=${activeFilter}`);
+  };  
 
   return (
     <div className="search-container">
+      <input
+        type="text"
+        placeholder="Search..."
+        value={searchQuery}
+        onChange={handleSearchChange}
+        className="search-input"
+      />
       <div className="filter-options">
-        {filters.map((filter) => (
+        {['All', 'Posts', 'People', 'Pages'].map((filter) => (
           <button
             key={filter}
             className={`filter-btn ${activeFilter === filter ? 'active' : ''}`}
@@ -29,6 +41,7 @@ const SearchComponent = () => {
           </button>
         ))}
       </div>
+      <button onClick={handleSearch}>Search</button>
     </div>
   );
 };

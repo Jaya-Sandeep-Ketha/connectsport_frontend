@@ -1,0 +1,117 @@
+// SearchResultsPage.jsx
+import React, { useEffect, useState } from 'react';
+import { useLocation, Link } from 'react-router-dom';
+import ProfileModal from '../features/profileModel';
+import '../../Styles/HomePage/search.css';
+
+const SearchResultsPage = () => {
+  const { search } = useLocation();
+  const [results, setResults] = useState({ users: [], pages: [], posts: [] });
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+
+  useEffect(() => {
+    const fetchSearchResults = async () => {
+      console.log('Fetching search results');
+      setIsLoading(true);
+      try {
+        console.log(`Request URL: /search${search}`);
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/search${search}`);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        console.log('Search results received:', data);
+        setResults(data);
+      } catch (error) {
+        console.error('Failed to fetch search results:', error);
+        setError('Failed to fetch search results. Please try again.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchSearchResults();
+  }, [search]);
+
+  if (isLoading) {
+    return <div>Loading search results...</div>;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
+// Function to handle the profile click, which opens the modal
+const handleProfileClick = (user) => {
+    setSelectedUser(user);
+    setShowProfileModal(true);
+  };
+
+  // Function to close the modal
+  const handleCloseModal = () => {
+    setShowProfileModal(false);
+    setSelectedUser(null); // Clear the selected user
+  };
+
+
+  return (
+    <div className="search-results-page">
+      <h2>Search Results</h2>
+      <section>
+        <h3>Users</h3>
+        {results.users.length > 0 ? (
+    <ul>
+      {results.users.map((user) => (
+        <li key={user._id}>
+          <a
+            href="#!"
+            className="user-link"
+            onClick={(e) => {
+              e.preventDefault(); // Prevent the default anchor link behavior
+              handleProfileClick(user);
+            }}
+          >
+            {user.firstName} {user.lastName}
+          </a>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p className="no-results">No user results found.</p>
+  )}
+      </section>
+      <section>
+        <h3>Pages</h3>
+        {results.pages.length > 0 ? (
+          <ul className="results-list">
+            {results.pages.map((page) => (
+              <li key={page._id} className="result-item">
+                <Link to={`/pages/${page._id}`}>{page.title}</Link> {/* Adjust URL as needed */}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="no-results">No page results found.</p>
+        )}
+      </section>
+      <section>
+        <h3>Posts</h3>
+        {results.posts.length > 0 ? (
+          <ul>
+            {results.posts.map((post) => (
+              <li key={post._id}>{post.content}</li> // Adjust as per your post object
+            ))}
+          </ul>
+        ) : (
+          <p className="no-results">No post results found.</p>
+        )}
+      </section>
+      {showProfileModal && selectedUser && (
+        <ProfileModal userId={selectedUser._id} onClose={handleCloseModal} />
+      )}
+    </div>
+  );
+};
+
+export default SearchResultsPage;

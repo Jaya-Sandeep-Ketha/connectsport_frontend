@@ -1,0 +1,45 @@
+.search-results-page {
+    font-family: 'Arial', sans-serif;
+    color: #333;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .search-results-page h2 {
+    text-align: center;
+    color: #222;
+    margin-bottom: 30px;
+  }
+  
+  .results-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .result-item {
+    background-color: #f8f8f8;
+    border: 1px solid #e7e7e7;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .result-item a {
+    text-decoration: none;
+    color: #0077cc;
+    font-weight: bold;
+  }
+  
+  .result-item a:hover {
+    text-decoration: underline;
+  }
+  
+  .no-results {
+    color: #777;
+    font-style: italic;
+  }
+  
+  /* Feel free to add more styling to match your site's theme */
+  

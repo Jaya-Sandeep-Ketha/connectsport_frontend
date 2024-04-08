@@ -19,6 +19,7 @@ import "./styles.css";
 import NotificationsPage from "./pages/Notifications/notificationsPage";
 import Pages from "./pages/Pages/pageList";
 import PageDetail from "./pages/Pages/pageDetail";
+import SearchResultsPage from './Components/common/searchResultsPage'; 
 
 // A functional ProtectedRoute component
 const ProtectedRoute = ({ children }) => {
@@ -87,6 +88,14 @@ export default function App() {
           element={
             <ProtectedRoute>
               <PageDetail />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/search-results"
+          element={
+            <ProtectedRoute>
+              <SearchResultsPage />
             </ProtectedRoute>
           }
         />
