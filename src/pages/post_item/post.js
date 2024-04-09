@@ -65,8 +65,40 @@ function Post({ _id, author, content, image, deletePost, likesCount, onCommentAd
       setError(error.message);
     }
   };
-  
 
+  const sharePost = async () => {
+    // Log the current user object to ensure it's correctly obtained
+    console.log("Current user: ", currentUser);
+  
+    // Assuming `currentUser` has a `username` property you want to use in the URL
+    const username = currentUser;
+    console.log("Username for sharing: ", username); // This will confirm you're getting the right username
+  
+    const url = `${process.env.REACT_APP_API_URL}/${username}/posts/${_id}/share`;
+    console.log("Constructed URL for sharing: ", url); // Check the constructed URL is as expected
+  
+    try {
+      console.log("Attempting to share post with ID: ", _id); // Confirm the ID of the post being shared
+  
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Failed to share the post. Status: ${response.status}`);
+      }
+  
+      console.log("Share response: ", await response.json()); // Log the response from the server
+      alert('Post shared successfully!');
+    } catch (error) {
+      console.error("Error sharing the post: ", error.message);
+      alert('Error sharing the post');
+    }
+  };
+  
   return (
     <div style={postStyle}>
       <div className="post-header">
@@ -87,6 +119,7 @@ function Post({ _id, author, content, image, deletePost, likesCount, onCommentAd
         likesCount={likesCount}
         onCommentToggle={() => setShowComments(!showComments)} 
         commentsCount={comments.length}
+        onShare={() => sharePost(_id)}
       />
       {showComments && (
         <div style={{ maxHeight: '200px', overflowY: 'auto', marginTop: '10px', borderTop: '1px solid #ccc' }}>

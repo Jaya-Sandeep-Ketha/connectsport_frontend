@@ -1,7 +1,7 @@
 import React from 'react';
 import IconButton from '../ui/iconButton'; // Ensure this is the correct path
 
-const SocialButtons = ({ onLike, likesCount, onCommentToggle, commentsCount }) => {
+const SocialButtons = ({ onLike, likesCount, onCommentToggle, commentsCount, onShare }) => {
   return (
     <div style={containerStyle}>
       <div style={buttonGroupStyle}>
@@ -17,7 +17,7 @@ const SocialButtons = ({ onLike, likesCount, onCommentToggle, commentsCount }) =
       </div>
       <div style={dividerStyle}></div>
       <div style={buttonGroupStyle}>
-        <IconButton iconName="faShare" onClick={() => console.log('Shared')} ariaLabel="Share" />
+        <IconButton iconName="faShare" onClick={onShare} ariaLabel="Share" />
         <span style={labelStyle}>Share</span>
       </div>
     </div>
