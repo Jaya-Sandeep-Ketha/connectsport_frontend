@@ -212,7 +212,8 @@ const Login = () => {
   
       if (response.ok) {
         if (!data.captchaRequired) {
-          localStorage.setItem("token", data.token);
+          localStorage.setItem("token", data.token); // Store JWT token
+          localStorage.setItem("userName", JSON.stringify({ name: data.userId })); // Store the username
           navigate(`/home/${data.userId}`);
           console.log("Login successful, navigating");
         } else {
