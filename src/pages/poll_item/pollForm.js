@@ -14,14 +14,36 @@ function PollForm({ onPollSubmit }) {
     setOptions(newOptions);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!question.trim() || options.some(option => !option.trim())) return; // Validation
-    onPollSubmit({ question, options });
-    setQuestion('');
-    setOptions(['', '']); // Reset form
+    if (!question.trim() || options.some(option => !option.trim())) return;
+  
+    try {
+      console.log('Creating poll with question:', question);
+      const response = await fetch('/newpoll', {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          question,
+          options: options.map(option => ({ option, votes: 0 })), // Adjust based on your backend expectations
+        }),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to create poll');
+      }
+      const newPoll = await response.json();
+      onPollSubmit(newPoll); // Make sure `onPollSubmit` updates your state or otherwise integrates the new poll into your app
+      setQuestion('');
+      setOptions(['', '']);
+    } catch (error) {
+      console.error(error.message);
+    }
   };
-
+  
   return (
     <form onSubmit={handleSubmit}>
       <input

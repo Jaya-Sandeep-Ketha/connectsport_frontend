@@ -3,7 +3,7 @@ import { useAuth } from "../../services/useAuth";
 
 function Poll({ poll, onVote }) {
   const [selectedOption, setSelectedOption] = useState('');
-  const { isLoggedIn } = useAuth(); // Assuming handleLogout isn't used here
+  const { isLoggedIn, currentUser } = useAuth(); // Assuming handleLogout isn't used here
 
   const handleOptionChange = (e) => {
     setSelectedOption(e.target.value);
@@ -11,15 +11,16 @@ function Poll({ poll, onVote }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedOption) return; // Prevents submitting an empty vote
+    if (!selectedOption) return;
     if (!isLoggedIn) {
-      alert('You must be logged in to vote.'); // Consider a more integrated way of showing this message
+      alert('You must be logged in to vote.');
       return;
     }
-
+  
     try {
-      const response = await fetch(`http://localhost:3000/polls/${poll.id}/vote`, {
-        method: 'POST',
+      console.log('Sending vote:', { option: selectedOption });
+      const response = await fetch(`/${currentUser}/polls/${poll.id}/vote`, {
+        method: 'PUT',
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
           'Content-Type': 'application/json',
@@ -27,16 +28,16 @@ function Poll({ poll, onVote }) {
         body: JSON.stringify({ option: selectedOption }),
       });
       if (!response.ok) {
-        const errorData = await response.json(); // Assuming the server sends back a JSON response
+        const errorData = await response.json();
         throw new Error(errorData.message || 'Failed to cast vote');
       }
       const updatedPoll = await response.json();
-      onVote(updatedPoll); // Updated to use the correct prop for updating the parent component
+      onVote(updatedPoll);
     } catch (error) {
       console.error(error.message);
-      alert(error.message); // Consider a more integrated way of showing this message
+      alert(error.message);
     }
-    setSelectedOption(''); // Reset after submit
+    setSelectedOption('');
   };
 
   return (
