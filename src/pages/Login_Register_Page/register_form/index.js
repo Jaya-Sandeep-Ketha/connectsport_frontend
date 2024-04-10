@@ -232,11 +232,11 @@ const RegistrationPage = () => {
                       name="favoriteSports"
                       onChange={handleMultiSelectChange}
                     >
-                      <option value="soccer">Soccer</option>
-                      <option value="basketball">Basketball</option>
-                      <option value="baseball">Baseball</option>
-                      <option value="tennis">Tennis</option>
-                      <option value="cricket">Cricket</option>
+                      <option value="Soccer">Soccer</option>
+                      <option value="Basketball">Basketball</option>
+                      <option value="Baseball">Baseball</option>
+                      <option value="Tennis">Tennis</option>
+                      <option value="Cricket">Cricket</option>
                     </Form.Select>
                   </Form.Group>
                   {/* Terms of Service Checkbox */}

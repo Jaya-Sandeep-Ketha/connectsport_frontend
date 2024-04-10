@@ -17,7 +17,7 @@ function PostForm({ onPostSubmit, onPollSubmit }) {
   const [selectedSport, setSelectedSport] = useState(""); // Sport selection state
   const [fileInputKey, setFileInputKey] = useState(Date.now()); // Initialize with current timestamp
 
-  const sports = ["Soccer", "Basketball", "Tennis", "Baseball", "Cycling"]; // List of sports
+  const sports = ["Soccer", "Basketball", "Tennis", "Baseball", "Cricket"]; // List of sports
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];

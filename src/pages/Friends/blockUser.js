@@ -37,7 +37,7 @@ const BlockUser = () => {
 
     if (searchTerm) {
       fetch(
-        `${process.env.REACT_APP_API_URL}/search?searchTerm=${searchTerm}&userId=${currentUser}`,
+        `${process.env.REACT_APP_API_URL}/block/search?searchTerm=${searchTerm}&userId=${currentUser}`,
         {
           headers: {
             "Content-Type": "application/json",

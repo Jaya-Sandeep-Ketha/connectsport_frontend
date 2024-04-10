@@ -21,6 +21,7 @@ function PostList({ posts, currentUser, onVote, updatePostLikes, onCommentAdded 
             updatePostLikes={updatePostLikes} // Assuming updatePostLikes function is passed down or managed in Post
             onCommentAdded = {onCommentAdded}
             currentUser={currentUser}
+            shared={post.shared}
           />
         );
       })}
