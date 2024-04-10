@@ -29,28 +29,6 @@ const Login = () => {
     setRecaptchaToken(token);
   };
 
-  useEffect(() => {
-    // Only check for CAPTCHA requirement if username and password are provided
-    if (inputUsername && inputPassword) {
-      checkCaptchaRequirement();
-    }
-  }, [inputUsername, inputPassword]);
-
-  const checkCaptchaRequirement = async () => {
-    try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/check-captcha`, { userId: inputUsername });
-      if (response.data.captchaRequired) {
-        setShowCaptcha(true);
-      } else {
-        setShowCaptcha(false);
-      }
-    } catch (error) {
-      console.error("Error fetching CAPTCHA requirement:", error);
-      setShowCaptcha(false); // Assume no CAPTCHA needed on error to prevent blocking users
-    }
-  };
-
-
   const GoogleSignIn = async (event) => {
     const provider = new GoogleAuthProvider();
     const auth = getAuth(app);
@@ -161,13 +139,12 @@ const Login = () => {
     setLoading(true);
 
     const loginUrl = `${process.env.REACT_APP_API_URL}/login`;
-    // Prepare login data
     const loginData = {
       userId: inputUsername,
       password: inputPassword,
-      recaptchaToken: showCaptcha ? recaptchaToken : undefined,
+      ...(showCaptcha && { recaptchaToken }), // Include CAPTCHA token only if CAPTCHA is shown
     };
-    
+
     try {
       const response = await fetch(loginUrl, {
         method: "POST",
