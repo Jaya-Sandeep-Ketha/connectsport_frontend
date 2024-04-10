@@ -186,17 +186,18 @@ const Login = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
-    setShow(false); // Reset error visibility at the start of a new login attempt
-    setShowCaptcha(false); // Assume CAPTCHA is not required until the server says otherwise
-
+    console.log("Starting login attempt");
+  
     const loginUrl = `${process.env.REACT_APP_API_URL}/login`;
-
+  
     const loginData = {
       userId: inputUsername,
       password: inputPassword,
-      recaptchaToken: showCaptcha ? recaptchaToken : undefined, // Include the CAPTCHA token only if required
+      ...(showCaptcha && { recaptchaToken }),
     };
-
+  
+    console.log("Login data being sent:", loginData);
+  
     try {
       const response = await fetch(loginUrl, {
         method: "POST",
@@ -205,26 +206,34 @@ const Login = () => {
         },
         body: JSON.stringify(loginData),
       });
-
+  
       const data = await response.json();
-
+      console.log("Response received:", data);
+  
       if (response.ok) {
-        localStorage.setItem("token", data.token); // Store JWT token
-        navigate(`/home/${data.userId}`);
-      } else {
-        if (data.captchaRequired) {
-          setShowCaptcha(true); // Prompt for CAPTCHA
+        if (!data.captchaRequired) {
+          localStorage.setItem("token", data.token);
+          navigate(`/home/${data.userId}`);
+          console.log("Login successful, navigating");
+        } else {
+          setShowCaptcha(true);
+          if(recaptchaToken) {
+            alert("CAPTCHA verification failed, please try again.");
+          }
         }
-        setShow(true); // Show error alert for other types of errors
+      } else {
+        // Handle other errors like incorrect credentials here
+        alert("Login failed, please check your username and password.");
       }
     } catch (error) {
       console.error("Login error:", error);
-      setShow(true); // Show error alert
+      // Show generic error message or specific based on error type
+      setShow(true);
     } finally {
       setLoading(false);
     }
-  };
-
+  };  
+  
   return (
     <div
       className="sign-in__wrapper"
