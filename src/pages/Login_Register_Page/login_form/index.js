@@ -6,6 +6,7 @@ import "../../../Styles/Login_Register_Page/LoginForm.css";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../../Components/layout/footer.js";
 import ReusableForm from "../../../Components/ui/reusableForm.js";
+import ReCAPTCHA from "react-google-recaptcha";
 import {
   getAuth,
   signInWithPopup,
@@ -20,23 +21,28 @@ const Login = () => {
   const [inputPassword, setInputPassword] = useState("");
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [recaptchaToken, setRecaptchaToken] = useState("");
   const navigate = useNavigate();
+
+  const onRecaptchaChange = (token) => {
+    setRecaptchaToken(token);
+  };
 
   const GoogleSignIn = async (event) => {
     const provider = new GoogleAuthProvider();
     const auth = getAuth(app);
-  
+
     try {
       const result = await signInWithPopup(auth, provider);
-  
+
       // This gives you a Google Access Token. You can use it to access the Google API.
       const credential = GoogleAuthProvider.credentialFromResult(result);
       const token = credential.accessToken;
       // The signed-in user info.
       const user = result.user;
       // IdP data available using getAdditionalUserInfo(result)
-      const backendUrl = process.env.REACT_APP_API_URL + '/auth/google';
-  
+      const backendUrl = process.env.REACT_APP_API_URL + "/auth/google";
+
       // This object contains the user information you might want to store in MongoDB
       const userData = {
         email: user.email,
@@ -44,19 +50,19 @@ const Login = () => {
         providerId: user.providerData[0].providerId,
         // Add other details you might need
       };
-  
+
       const response = await fetch(backendUrl, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(userData),
       });
-  
+
       const data = await response.json();
-  
+
       if (response.ok) {
-        localStorage.setItem('token', data.token); // Store JWT token
+        localStorage.setItem("token", data.token); // Store JWT token
         navigate(`/home/${user.email}`); // Redirect to the homepage or user's profile
       } else {
         // Handle any errors, such as user already exists
@@ -64,24 +70,25 @@ const Login = () => {
       }
     } catch (error) {
       // Handle Errors here.
-      console.error('Error during Google sign in', error);
+      console.error("Error during Google sign in", error);
       setShow(true);
-  
+
       // The email of the user's account used, if available.
       const email = error.customData?.email;
       // The AuthCredential type that was used, if available.
-      const credential = error.code !== 'auth/cancelled-popup-request' ? 
-                         GoogleAuthProvider.credentialFromError(error) : 
-                         null;
+      const credential =
+        error.code !== "auth/cancelled-popup-request"
+          ? GoogleAuthProvider.credentialFromError(error)
+          : null;
       // Log additional information, if needed.
       console.error(`Error code: ${error.code}, Message: ${error.message}`);
     }
-  };  
+  };
 
   const signInWithFacebook = async (event) => {
     const provider = new FacebookAuthProvider();
     const auth = getAuth(app);
-  
+
     try {
       const result = await signInWithPopup(auth, provider);
       // This gives you a Facebook Access Token. You can use it to access the Facebook API.
@@ -90,9 +97,9 @@ const Login = () => {
       // The signed-in user info.
       const user = result.user;
       // IdP data available using getAdditionalUserInfo(result), if needed
-  
-      const backendUrl = process.env.REACT_APP_API_URL + '/auth/facebook';
-  
+
+      const backendUrl = process.env.REACT_APP_API_URL + "/auth/facebook";
+
       // This object contains the user information you might want to store in MongoDB
       const userData = {
         email: user.email,
@@ -100,19 +107,19 @@ const Login = () => {
         providerId: user.providerData[0].providerId,
         // Add other details you might need
       };
-  
+
       const response = await fetch(backendUrl, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(userData),
       });
-  
+
       const data = await response.json();
-  
+
       if (response.ok) {
-        localStorage.setItem('token', data.token); // Store JWT token
+        localStorage.setItem("token", data.token); // Store JWT token
         navigate(`/home/${user.email}`); // Redirect to the homepage or user's profile
       } else {
         // Handle any errors, such as user already exists
@@ -120,22 +127,24 @@ const Login = () => {
       }
     } catch (error) {
       // Handle Errors here.
-      console.error('Error during Facebook sign in', error);
+      console.error("Error during Facebook sign in", error);
       setShow(true); // Show error alert if needed
     }
-  };  
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
 
     // Replace 'http://localhost:3000/login' with your actual login endpoint
-//    const loginUrl = `${process.env.REACT_APP_API_URL}/login`;
+    //    const loginUrl = `${process.env.REACT_APP_API_URL}/login`;
     const loginUrl = `${process.env.REACT_APP_API_URL}/login`; //This is done for deployment test.
 
+    // Include recaptchaToken in your login request
     const loginData = {
       userId: inputUsername,
       password: inputPassword,
+      recaptchaToken: recaptchaToken,
     };
 
     try {
@@ -231,6 +240,7 @@ const Login = () => {
             required
           />
         </Form.Group>
+        <ReCAPTCHA sitekey="6LepEbcpAAAAADvOEDOkT7nd3h8yplCI7TUz9N8i" onChange={onRecaptchaChange} />
 
         <Form.Group className="mb-2" controlId="checkbox">
           <Form.Check type="checkbox" label="Remember me" />
