@@ -22,6 +22,7 @@ const Login = () => {
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [recaptchaToken, setRecaptchaToken] = useState("");
+  const [showCaptcha, setShowCaptcha] = useState(false); // Initially, CAPTCHA is not shown
   const navigate = useNavigate();
 
   const onRecaptchaChange = (token) => {
@@ -132,42 +133,43 @@ const Login = () => {
     }
   };
 
+  
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
 
-    // Replace 'http://localhost:3000/login' with your actual login endpoint
-    //    const loginUrl = `${process.env.REACT_APP_API_URL}/login`;
-    const loginUrl = `${process.env.REACT_APP_API_URL}/login`; //This is done for deployment test.
-
-    // Include recaptchaToken in your login request
+    const loginUrl = `${process.env.REACT_APP_API_URL}/login`;
     const loginData = {
       userId: inputUsername,
       password: inputPassword,
-      recaptchaToken: recaptchaToken,
+      ...(showCaptcha && { recaptchaToken }), // Include CAPTCHA token only if CAPTCHA is shown
     };
 
     try {
       const response = await fetch(loginUrl, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(loginData),
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        localStorage.setItem("token", data.token); // Store JWT token
-        localStorage.setItem("userName", JSON.stringify({ name: data.userId })); // Store the username
-        // console.log('Stored userID:', JSON.parse(localStorage.getItem('userName')).name);
-        navigate(`/home/${data.userId}`);
-      } else {
-        setShow(true); // Show error alert
+      if (!response.ok) {
+        const data = await response.json();
+        // Show CAPTCHA if backend requires it but it was not provided or was incorrect
+        if (data.message === "CAPTCHA required") {
+          setShowCaptcha(true);
+          setShow(true);
+          setLoading(false);
+          return;
+        }
+        throw new Error(data.message || "Login failed");
       }
+
+      const data = await response.json();
+      localStorage.setItem("token", data.token);
+      navigate(`/home/${data.userId}`);
     } catch (error) {
-      setShow(true); // Show error alert
+      setShow(true);
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -240,8 +242,8 @@ const Login = () => {
             required
           />
         </Form.Group>
-        <ReCAPTCHA sitekey="6LepEbcpAAAAADvOEDOkT7nd3h8yplCI7TUz9N8i" onChange={onRecaptchaChange} />
-
+        {showCaptcha && <ReCAPTCHA sitekey="6LepEbcpAAAAADvOEDOkT7nd3h8yplCI7TUz9N8i" onChange={onRecaptchaChange} />}
+      
         <Form.Group className="mb-2" controlId="checkbox">
           <Form.Check type="checkbox" label="Remember me" />
         </Form.Group>
