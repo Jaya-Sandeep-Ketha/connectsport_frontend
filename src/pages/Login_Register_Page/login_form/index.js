@@ -22,6 +22,7 @@ const Login = () => {
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [recaptchaToken, setRecaptchaToken] = useState("");
+  const [showCaptcha, setShowCaptcha] = useState(false);
   const navigate = useNavigate();
 
   const onRecaptchaChange = (token) => {
@@ -132,21 +133,70 @@ const Login = () => {
     }
   };
 
+  // const handleSubmit = async (event) => {
+  //   event.preventDefault();
+  //   setLoading(true);
+
+  //   // Replace 'http://localhost:3000/login' with your actual login endpoint
+  //   //    const loginUrl = `${process.env.REACT_APP_API_URL}/login`;
+  //   const loginUrl = `${process.env.REACT_APP_API_URL}/login`; //This is done for deployment test.
+
+  //   // Include recaptchaToken in your login request
+  //   const loginData = {
+  //     userId: inputUsername,
+  //     password: inputPassword,
+  //     // recaptchaToken: recaptchaToken,
+  //   };
+
+  //   try {
+  //     const response = await fetch(loginUrl, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(loginData),
+  //     });
+
+  //     const data = await response.json();
+
+  //     if (data.captchaRequired) {
+  //       // If CAPTCHA is required, display it and stop the process here
+  //       setShowCaptcha(true);
+  //       setLoading(false);
+  //       return; // Stop execution here, wait for user to complete CAPTCHA
+  //     }
+
+  //     if (response.ok) {
+  //       localStorage.setItem("token", data.token); // Store JWT token
+  //       localStorage.setItem("userName", JSON.stringify({ name: data.userId })); // Store the username
+  //       // console.log('Stored userID:', JSON.parse(localStorage.getItem('userName')).name);
+  //       navigate(`/home/${data.userId}`);
+  //     } else {
+  //       setShow(true); // Show error alert
+  //     }
+  //   } catch (error) {
+  //     setShow(true); // Show error alert
+  //   } finally {
+  //     if (!data.captchaRequired) {
+  //       setLoading(false);
+  //     }
+  //   }
+  // };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
-
-    // Replace 'http://localhost:3000/login' with your actual login endpoint
-    //    const loginUrl = `${process.env.REACT_APP_API_URL}/login`;
-    const loginUrl = `${process.env.REACT_APP_API_URL}/login`; //This is done for deployment test.
-
-    // Include recaptchaToken in your login request
+    setShow(false); // Reset error visibility at the start of a new login attempt
+    setShowCaptcha(false); // Assume CAPTCHA is not required until the server says otherwise
+  
+    const loginUrl = `${process.env.REACT_APP_API_URL}/login`;
+  
     const loginData = {
       userId: inputUsername,
       password: inputPassword,
-      recaptchaToken: recaptchaToken,
+      recaptchaToken: showCaptcha ? recaptchaToken : undefined, // Include the CAPTCHA token only if required
     };
-
+  
     try {
       const response = await fetch(loginUrl, {
         method: "POST",
@@ -155,18 +205,20 @@ const Login = () => {
         },
         body: JSON.stringify(loginData),
       });
-
+  
       const data = await response.json();
-
+  
       if (response.ok) {
         localStorage.setItem("token", data.token); // Store JWT token
-        localStorage.setItem("userName", JSON.stringify({ name: data.userId })); // Store the username
-        // console.log('Stored userID:', JSON.parse(localStorage.getItem('userName')).name);
         navigate(`/home/${data.userId}`);
       } else {
-        setShow(true); // Show error alert
+        if (data.captchaRequired) {
+          setShowCaptcha(true); // Prompt for CAPTCHA
+        }
+        setShow(true); // Show error alert for other types of errors
       }
     } catch (error) {
+      console.error("Login error:", error);
       setShow(true); // Show error alert
     } finally {
       setLoading(false);
