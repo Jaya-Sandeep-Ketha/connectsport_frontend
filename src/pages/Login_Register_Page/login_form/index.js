@@ -188,15 +188,15 @@ const Login = () => {
     setLoading(true);
     setShow(false); // Reset error visibility at the start of a new login attempt
     setShowCaptcha(false); // Assume CAPTCHA is not required until the server says otherwise
-  
+
     const loginUrl = `${process.env.REACT_APP_API_URL}/login`;
-  
+
     const loginData = {
       userId: inputUsername,
       password: inputPassword,
       recaptchaToken: showCaptcha ? recaptchaToken : undefined, // Include the CAPTCHA token only if required
     };
-  
+
     try {
       const response = await fetch(loginUrl, {
         method: "POST",
@@ -205,9 +205,9 @@ const Login = () => {
         },
         body: JSON.stringify(loginData),
       });
-  
+
       const data = await response.json();
-  
+
       if (response.ok) {
         localStorage.setItem("token", data.token); // Store JWT token
         navigate(`/home/${data.userId}`);
@@ -292,7 +292,16 @@ const Login = () => {
             required
           />
         </Form.Group>
-        <ReCAPTCHA sitekey="6LepEbcpAAAAADvOEDOkT7nd3h8yplCI7TUz9N8i" onChange={onRecaptchaChange} />
+        {/* <ReCAPTCHA
+          sitekey="6LepEbcpAAAAADvOEDOkT7nd3h8yplCI7TUz9N8i"
+          onChange={onRecaptchaChange}
+        /> */}
+        {showCaptcha && (
+          <ReCAPTCHA
+            sitekey="6LepEbcpAAAAADvOEDOkT7nd3h8yplCI7TUz9N8i"
+            onChange={onRecaptchaChange}
+          />
+        )}
 
         <Form.Group className="mb-2" controlId="checkbox">
           <Form.Check type="checkbox" label="Remember me" />
