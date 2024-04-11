@@ -1,17 +1,51 @@
 import React from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css'; // Make sure Bootstrap CSS is imported
+import '../../Styles/HomePage/pollDisplay.css'; // Path to your CSS file
 
 function PollDisplay({ poll, onVote }) {
+  const totalVotes = poll.options.reduce((total, option) => total + option.voters.length, 0);
+
+  const getPercentage = (votes) => {
+    return totalVotes === 0 ? 0 : (votes / totalVotes * 100).toFixed(1);
+  };
+
   return (
-    <div>
-      <h2>{poll.content}</h2>
-      <ul>
-        {poll.options.map((option, index) => (
-          <li key={index}>
-            {option.option} - Votes: {option.votes}
-            <button onClick={() => onVote(poll.id, option.option)}>Vote</button>
-          </li>
-        ))}
-      </ul>
+    <div className="card poll-display my-3">
+      <div className="card-body">
+        <h5 className="card-title text-center">{poll.question}</h5>
+        <form>
+          {poll.options.map((option, index) => (
+            <div key={index} className="d-flex align-items-center my-2">
+              <div className="form-check form-check-inline">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="pollOptions"
+                  id={`option${index}`}
+                  value={option.text}
+                  onChange={() => onVote(poll._id, option.text)}
+                />
+                <label className="form-check-label btn btn-outline-primary" htmlFor={`option${index}`}>
+                  {option.text}
+                </label>
+              </div>
+              <div className="progress flex-grow-1 mx-2" style={{ minWidth: '20%' }}>
+                <div
+                  className="progress-bar"
+                  role="progressbar"
+                  style={{ width: `${getPercentage(option.voters.length)}%` }}
+                  aria-valuenow={getPercentage(option.voters.length)}
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                >
+                  {getPercentage(option.voters.length)}%
+                </div>
+              </div>
+              <span className="ms-2 text-secondary">{getPercentage(option.voters.length)}% ({option.voters.length} votes)</span>
+            </div>
+          ))}
+        </form>
+      </div>
     </div>
   );
 }

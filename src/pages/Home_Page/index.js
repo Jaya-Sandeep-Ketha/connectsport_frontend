@@ -5,6 +5,7 @@ import Navbar from "../../Components/layout/navbar";
 import PostList from "../post_item/postList";
 import PostForm from "../post_item/postForm";
 import SearchComponent from "../../Components/common/searchComponent";
+import PollDisplay from "../poll_item/index"; // Import the PollDisplay component
 
 function HomePage() {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ function HomePage() {
   const [searchInput, setSearchInput] = useState("");
   const [posts, setPosts] = useState([]);
   const [showPollForm, setShowPollForm] = useState(false);
+  const [polls, setPolls] = useState([]); // New state for polls
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -37,8 +39,28 @@ function HomePage() {
       }
     };
 
+    const fetchPolls = async () => {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/polls`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setPolls(data);
+        } else {
+          throw new Error("Failed to fetch polls");
+        }
+      } catch (error) {
+        console.error(error);
+        navigate("/login"); // Redirect to login if fetching polls fails
+      }
+    };
+
     if (isLoggedIn) {
       fetchPosts();
+      fetchPolls();
     }
   }, [isLoggedIn, navigate]);
  
@@ -122,21 +144,30 @@ function HomePage() {
   };
 
   // This function should stay in HomePage if you're managing polls here
-  const handleVote = (pollId, selectedOption) => {
-    setPosts((prevPosts) =>
-      prevPosts.map((post) =>
-        post.id === pollId && post.type === "poll"
-          ? {
-              ...post,
-              options: post.options.map((option) =>
-                option.option === selectedOption
-                  ? { ...option, votes: option.votes + 1 }
-                  : option
-              ),
-            }
-          : post
-      )
-    );
+  const handleVote = async (pollId, optionText) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/polls/${pollId}/vote`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text: optionText }), // Make sure to match this with your backend
+      });
+  
+      if (response.ok) {
+        // If your backend returns the updated poll, you can use that to update state
+        const updatedPoll = await response.json();
+        setPolls(prevPolls =>
+          prevPolls.map(poll => poll._id === updatedPoll._id ? updatedPoll : poll)
+        );
+      } else {
+        throw new Error("Failed to cast vote");
+      }
+    } catch (error) {
+      console.error(error.message);
+      // handle error
+    }
   };
 
   const updatePostLikes = (updatedPost) => {
@@ -170,7 +201,6 @@ return (
         {/* Left sidebar content */}
       </div>
       <div className="col-md-6">
-        {/* PostForm now handles both creating posts and creating polls */}
         <PostForm onPostSubmit={addNewPost} onPollSubmit={handlePollCreated} />
         <PostList
           posts={posts}
@@ -180,6 +210,9 @@ return (
           updatePostLikes={updatePostLikes}
           onCommentAdded={onCommentAdded}
         />
+        {polls.map(poll => (
+          <PollDisplay key={poll._id} poll={poll} onVote={handleVote} />
+        ))}
       </div>
       <div className="col-md-3">
         {/* Right sidebar content */}
@@ -188,5 +221,4 @@ return (
   </div>
 );
 }
-
 export default HomePage;
