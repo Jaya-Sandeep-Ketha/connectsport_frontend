@@ -99,20 +99,28 @@ function HomePage() {
     }
   };
 
-  const addNewPoll = (poll) => {
-    // Here, you should ideally send the poll to your backend
-    // For simplicity, I'm just adding it directly to the 'posts' state
-    const newPoll = {
-      id: posts.length, // Note: Ensure you generate unique IDs based on your backend logic
-      type: "poll",
-      content: poll.question,
-      options: poll.options.map((option) => ({ option, votes: 0 })),
-    };
-    setPosts((prevPosts) => [...prevPosts, newPoll]);
-    setShowPollForm(false);
+  const handlePollCreated = async (pollData) => {
+    console.log("Creating new poll:", pollData);
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/newpoll`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(pollData),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to create poll');
+      }
+      const newPoll = await response.json();
+      console.log("Poll created successfully", newPoll);
+      setPosts(prevPosts => [newPoll, ...prevPosts]);
+    } catch (error) {
+      console.error("Error creating poll:", error.message);
+    }
   };
 
-  
   // This function should stay in HomePage if you're managing polls here
   const handleVote = (pollId, selectedOption) => {
     setPosts((prevPosts) =>
@@ -148,32 +156,37 @@ function HomePage() {
     );
 };
 
-  return (
-    <div className="container-fluid">
-      <Navbar
-        user={currentUser}
-        isLoggedIn={isLoggedIn}
-        onLogout={handleLogout}
-        onSearchChange={setSearchInput} // Pass setSearchInput as a prop
-      />
-      {searchInput && <SearchComponent />}
-      <div className="row">
-        <div className="col-md-3">{/* Left sidebar content */}</div>
-        <div className="col-md-6">
-          <PostForm onPostSubmit={addNewPost} onPollSubmit={addNewPoll} />
-          <PostList
-            posts={posts}
-            currentUser={currentUser}
-            onDeletePost={deletePost}
-            onVote={handleVote}
-            updatePostLikes={updatePostLikes} 
-            onCommentAdded={onCommentAdded}
-          />
-        </div>
-        <div className="col-md-3">{/* Right sidebar content */}</div>
+return (
+  <div className="container-fluid">
+    <Navbar
+      user={currentUser}
+      isLoggedIn={isLoggedIn}
+      onLogout={handleLogout}
+      onSearchChange={setSearchInput}
+    />
+    {searchInput && <SearchComponent />}
+    <div className="row">
+      <div className="col-md-3">
+        {/* Left sidebar content */}
+      </div>
+      <div className="col-md-6">
+        {/* PostForm now handles both creating posts and creating polls */}
+        <PostForm onPostSubmit={addNewPost} onPollSubmit={handlePollCreated} />
+        <PostList
+          posts={posts}
+          currentUser={currentUser}
+          onDeletePost={deletePost}
+          onVote={handleVote}
+          updatePostLikes={updatePostLikes}
+          onCommentAdded={onCommentAdded}
+        />
+      </div>
+      <div className="col-md-3">
+        {/* Right sidebar content */}
       </div>
     </div>
-  );
+  </div>
+);
 }
 
 export default HomePage;

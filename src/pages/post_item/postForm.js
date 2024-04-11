@@ -24,16 +24,25 @@ function PostForm({ onPostSubmit, onPollSubmit }) {
     setMedia(file);
   };
 
+  const submitPoll = async () => {
+    if (!pollQuestion.trim() || pollOptions.some((option) => !option.trim())) {
+      console.log('Validation failed: Question or options are empty.');
+      return;
+    }
+
+    const pollData = {
+      question: pollQuestion,
+      options: pollOptions.filter((option) => option.trim()),
+    };
+
+    onPollSubmit(pollData); // Call the passed in onPollSubmit prop with the prepared data
+    resetForm(); // Reset form fields after submission
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (showPollCreator) {
-      if (!pollQuestion.trim() || pollOptions.some((option) => !option.trim()))
-        return;
-      onPollSubmit({
-        question: pollQuestion,
-        options: pollOptions.filter((option) => option.trim()),
-      });
-      resetForm();
+      submitPoll();
     } else {
       if (!content.trim() && !media) return;
       onPostSubmit(content, media, selectedSport || "No Sport Selected");

@@ -16,11 +16,15 @@ function PollForm({ onPollSubmit }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!question.trim() || options.some(option => !option.trim())) return;
+    if (!question.trim() || options.some(option => !option.trim())) {
+      console.log('Validation failed: Question or options are empty.');
+      return;
+    }
   
+    console.log('Submitting poll with question and options:', { question, options });
     try {
-      console.log('Creating poll with question:', question);
-      const response = await fetch('/newpoll', {
+      // Make sure the URL matches your API endpoint
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/newpoll`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -28,19 +32,24 @@ function PollForm({ onPollSubmit }) {
         },
         body: JSON.stringify({
           question,
-          options: options.map(option => ({ option, votes: 0 })), // Adjust based on your backend expectations
+          options, // Adjust this if your backend expects a different format
         }),
       });
+
+      console.log('Response status:', response.status); // Log the response status
+
       if (!response.ok) {
         const errorData = await response.json();
+        console.log('Error response data:', errorData); // Log any error response data
         throw new Error(errorData.message || 'Failed to create poll');
       }
       const newPoll = await response.json();
-      onPollSubmit(newPoll); // Make sure `onPollSubmit` updates your state or otherwise integrates the new poll into your app
+      console.log('Poll created successfully:', newPoll); // Log the new poll object
+      onPollSubmit(newPoll); // Integrate the new poll into your app
       setQuestion('');
       setOptions(['', '']);
     } catch (error) {
-      console.error(error.message);
+      console.error('Error creating poll:', error.message);
     }
   };
   
