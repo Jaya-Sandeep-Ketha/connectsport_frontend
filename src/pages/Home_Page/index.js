@@ -132,6 +132,10 @@ function HomePage() {
         },
         body: JSON.stringify(pollData),
       });
+      if (response.ok) {
+        // After successful post submission
+        window.location.reload();  // This reloads the entire page
+      } 
       if (!response.ok) {
         throw new Error('Failed to create poll');
       }
@@ -143,8 +147,8 @@ function HomePage() {
     }
   };
 
-  // This function should stay in HomePage if you're managing polls here
   const handleVote = async (pollId, optionText) => {
+    console.log("Attempting to vote on poll:", pollId); // Debug: Check the poll ID when attempting to vote
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/polls/${pollId}/vote`, {
         method: 'PUT',
@@ -152,23 +156,27 @@ function HomePage() {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ text: optionText }), // Make sure to match this with your backend
+        body: JSON.stringify({ text: optionText }),
       });
   
+      console.log("Response status:", response.status); // Debug: Check the response status
+  
       if (response.ok) {
-        // If your backend returns the updated poll, you can use that to update state
         const updatedPoll = await response.json();
+        console.log("Vote successful, updated poll:", updatedPoll); // Debug: Log the updated poll
         setPolls(prevPolls =>
           prevPolls.map(poll => poll._id === updatedPoll._id ? updatedPoll : poll)
         );
       } else {
+        const error = await response.text();
+        console.error("Failed to cast vote:", error); // Debug: Log detailed error message
         throw new Error("Failed to cast vote");
       }
     } catch (error) {
-      console.error(error.message);
-      // handle error
+      console.error("Error in handleVote:", error.message); // Debug: Log errors in the catch block
     }
   };
+  
 
   const updatePostLikes = (updatedPost) => {
     // Assume updatedPost contains the full updated post object, including its new likes count

@@ -3,10 +3,17 @@ import 'bootstrap/dist/css/bootstrap.min.css'; // Make sure Bootstrap CSS is imp
 import '../../Styles/HomePage/pollDisplay.css'; // Path to your CSS file
 
 function PollDisplay({ poll, onVote }) {
-  const totalVotes = poll.options.reduce((total, option) => total + option.voters.length, 0);
+  // const totalVotes = poll.options.reduce((total, option) => total + option.voters.length, 0);
+  const totalVotes = poll.options.reduce((total, option) => total + (option.voters ? option.voters.length : 0), 0);
+
 
   const getPercentage = (votes) => {
     return totalVotes === 0 ? 0 : (votes / totalVotes * 100).toFixed(1);
+  };
+
+  const handleOptionClick = (optionText) => {
+    console.log(`Voting on Poll ID: ${poll._id} with option: ${optionText}`); // Additional debug info
+    onVote(poll._id, optionText);
   };
 
   return (
@@ -20,12 +27,12 @@ function PollDisplay({ poll, onVote }) {
                 <input
                   className="form-check-input"
                   type="radio"
-                  name="pollOptions"
-                  id={`option${index}`}
+                  name={`pollOptions-${poll._id}`} // Ensures unique name for radio group per poll
+                  id={`option${index}-${poll._id}`} // Ensures unique ID per option
                   value={option.text}
-                  onChange={() => onVote(poll._id, option.text)}
+                  onChange={() => handleOptionClick(option.text)}
                 />
-                <label className="form-check-label btn btn-outline-primary" htmlFor={`option${index}`}>
+                <label className="form-check-label btn btn-outline-primary" htmlFor={`option${index}-${poll._id}`}>
                   {option.text}
                 </label>
               </div>

@@ -10,7 +10,7 @@ function Post({
   deletePost,
   likesCount,
   onCommentAdded,
-  comments,
+  comments = [],
   updatePostLikes,
   shared,
 }) {
@@ -21,9 +21,15 @@ function Post({
   const [error, setError] = useState("");
   const { isLoggedIn, currentUser } = useAuth(); // Now using currentUser from useAuth
 
+  // useEffect(() => {
+  //   setLocalComments(comments);
+  // }, [comments]);
   useEffect(() => {
-    setLocalComments(comments);
-  }, [comments]);
+    // Only update if there is a real change to avoid infinite loops
+    if (JSON.stringify(localComments) !== JSON.stringify(comments)) {
+      setLocalComments(comments || []);
+    }
+  }, [comments]); // Ensure comments is correctly passed as a prop
 
   // Handles the increment or decrement of likes
   const handleLike = async () => {

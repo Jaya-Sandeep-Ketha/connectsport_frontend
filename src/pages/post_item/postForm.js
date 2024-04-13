@@ -34,10 +34,11 @@ function PostForm({ onPostSubmit, onPollSubmit }) {
       question: pollQuestion,
       options: pollOptions.filter((option) => option.trim()),
     };
-
     onPollSubmit(pollData); // Call the passed in onPollSubmit prop with the prepared data
     resetForm(); // Reset form fields after submission
   };
+
+  
 
   const handleSubmit = (e) => {
     e.preventDefault();

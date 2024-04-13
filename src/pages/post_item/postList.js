@@ -6,6 +6,7 @@ function PostList({ posts, currentUser, onVote, updatePostLikes, onCommentAdded 
   return (
     <div>
       {posts.map((post) => {
+        const likesCount = Array.isArray(post.likes) ? post.likes.length : 0;
         return post.type === 'poll' ? (
           <PollDisplay key={post.id} poll={post} onVote={onVote} />
         ) : (
@@ -16,7 +17,8 @@ function PostList({ posts, currentUser, onVote, updatePostLikes, onCommentAdded 
             content={post.postDescription}
             image={post.image}
             deletePost={post.deletePost} // Assuming deletePost function is passed down or managed in Post
-            likesCount={post.likes.length}
+            // likesCount={post.likes.length}
+            likesCount={likesCount}
             comments={post.comments}
             updatePostLikes={updatePostLikes} // Assuming updatePostLikes function is passed down or managed in Post
             onCommentAdded = {onCommentAdded}
