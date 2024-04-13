@@ -90,24 +90,20 @@ function PostForm({ onPostSubmit, onPollSubmit }) {
         className="textareaStyle"
       />
 
-      <div className="buttonsContainerStyle">
+      <div className="buttonsContainerStyle d-flex flex-column flex-md-row justify-content-md-between justify-content-center align-items-center my-2">
         {!showPollCreator && (
           <label
-            className="fileInputLabelStyle"
-            style={{
-              flexGrow: 1,
-              marginRight: "8px",
-              justifyContent: "center",
-            }}
+          className="btn btn-primary btn-lg mb-2 mb-md-0 me-md-2" style={{ flexGrow: 1 }}
           >
-            <FontAwesomeIcon icon={faFileUpload} className="iconStyle" />
-            <span style={{ marginLeft: "8px" }}>Upload Image/Video</span>
+            <FontAwesomeIcon icon={faFileUpload} className="me-2" />
+            Upload Image/Video
             <input
               key={fileInputKey}
               type="file"
               accept="image/*,video/*"
               onChange={handleFileChange}
               className="fileInputStyle"
+              style={{ display: "none" }}
             />
           </label>
         )}
@@ -115,13 +111,13 @@ function PostForm({ onPostSubmit, onPollSubmit }) {
         <button
           type="button"
           onClick={() => setShowPollCreator(!showPollCreator)}
-          className="buttonStyle" style={{ width: showPollCreator ? "100%" : "49%" }}
+          className={`btn ${showPollCreator ? "btn-secondary" : "btn-primary"} btn-lg w-100 w-md-auto ms-md-2`}
         >
           {showPollCreator ? (
             "Back to Post"
           ) : (
             <>
-              <FontAwesomeIcon icon={faPoll} className="iconStyle" /> Create Poll
+              <FontAwesomeIcon icon={faPoll} className="me-2" /> Create Poll
             </>
           )}
         </button>
