@@ -3,6 +3,15 @@ import Post from './post'; // Correct import path
 import PollDisplay from '../poll_item'; // Correct import path
 
 function PostList({ posts, currentUser, onVote, updatePostLikes, onCommentAdded }) {
+  const seen = new Set();
+
+  posts.forEach(post => {
+    if (seen.has(post._id)) {
+      console.error("Duplicate key found:", post._id);
+    }
+    seen.add(post._id);
+  });
+
   return (
     <div>
       {posts.map((post) => {

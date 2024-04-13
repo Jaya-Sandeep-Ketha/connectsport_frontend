@@ -16,6 +16,29 @@ function HomePage() {
   const [polls, setPolls] = useState([]); // New state for polls
 
   useEffect(() => {
+    // const fetchPosts = async () => {
+    //   try {
+    //     const response = await fetch(`${process.env.REACT_APP_API_URL}/posts`, {
+    //       headers: {
+    //         Authorization: `Bearer ${localStorage.getItem("token")}`,
+    //       },
+    //     });
+    //     if (response.ok) {
+    //       const data = await response.json();
+    //       const postsWithLikes = data.map(post => ({
+    //         ...post,
+    //         likes: post.likes || [], // Ensures likes is always an array
+    //       }));
+    //       setPosts(postsWithLikes);
+    //     } else {
+    //       throw new Error("Failed to fetch posts");
+    //     }
+    //   } catch (error) {
+    //     console.error(error);
+    //     navigate("/login"); // Redirect to login if fetching posts fails
+    //   }
+    // };
+
     const fetchPosts = async () => {
       try {
         const response = await fetch(`${process.env.REACT_APP_API_URL}/posts`, {
@@ -25,19 +48,34 @@ function HomePage() {
         });
         if (response.ok) {
           const data = await response.json();
+    
+          // Map through the data to ensure 'likes' is always an array
           const postsWithLikes = data.map(post => ({
             ...post,
-            likes: post.likes || [], // Ensures likes is always an array
+            likes: post.likes || [],
           }));
-          setPosts(postsWithLikes);
+    
+          // Deduplicate posts based on their '_id'
+          const uniquePosts = postsWithLikes.reduce((acc, current) => {
+            const x = acc.find(item => item._id === current._id);
+            if (!x) {
+              return acc.concat([current]);
+            } else {
+              return acc;
+            }
+          }, []);
+    
+          // Update state with unique posts
+          setPosts(uniquePosts);
         } else {
           throw new Error("Failed to fetch posts");
         }
       } catch (error) {
-        console.error(error);
+        console.error("Error fetching posts:", error);
         navigate("/login"); // Redirect to login if fetching posts fails
       }
     };
+    
 
     const fetchPolls = async () => {
       try {
