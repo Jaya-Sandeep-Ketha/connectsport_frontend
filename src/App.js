@@ -19,7 +19,8 @@ import "./styles.css";
 import NotificationsPage from "./pages/Notifications/notificationsPage";
 import Pages from "./pages/Pages/pageList";
 import PageDetail from "./pages/Pages/pageDetail";
-import SearchResultsPage from './Components/common/searchResultsPage'; 
+import SearchResultsPage from "./Components/common/searchResultsPage";
+import UserPolls from "./pages/poll_item/userPolls";
 
 // A functional ProtectedRoute component
 const ProtectedRoute = ({ children }) => {
@@ -96,6 +97,15 @@ export default function App() {
           element={
             <ProtectedRoute>
               <SearchResultsPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/user-polls"
+          element={
+            <ProtectedRoute>
+              <UserPolls />
             </ProtectedRoute>
           }
         />

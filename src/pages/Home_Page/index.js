@@ -48,23 +48,23 @@ function HomePage() {
         });
         if (response.ok) {
           const data = await response.json();
-    
+
           // Map through the data to ensure 'likes' is always an array
-          const postsWithLikes = data.map(post => ({
+          const postsWithLikes = data.map((post) => ({
             ...post,
             likes: post.likes || [],
           }));
-    
+
           // Deduplicate posts based on their '_id'
           const uniquePosts = postsWithLikes.reduce((acc, current) => {
-            const x = acc.find(item => item._id === current._id);
+            const x = acc.find((item) => item._id === current._id);
             if (!x) {
               return acc.concat([current]);
             } else {
               return acc;
             }
           }, []);
-    
+
           // Update state with unique posts
           setPosts(uniquePosts);
         } else {
@@ -75,7 +75,6 @@ function HomePage() {
         navigate("/login"); // Redirect to login if fetching posts fails
       }
     };
-    
 
     const fetchPolls = async () => {
       try {
@@ -101,7 +100,7 @@ function HomePage() {
       fetchPolls();
     }
   }, [isLoggedIn, navigate]);
- 
+
   // const handleLogout = () => {
   //   localStorage.removeItem("token");
   //   localStorage.removeItem("userName");
@@ -139,15 +138,22 @@ function HomePage() {
     }
   };
 
+  const goToUserPolls = () => {
+    navigate("/user-polls");
+  };
+
   // Add this function inside your HomePage component
   const deletePost = async (postId) => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/posts/${postId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`, // Adjust according to your auth method
-        },
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/posts/${postId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`, // Adjust according to your auth method
+          },
+        }
+      );
       if (response.ok) {
         // Filter out the post from the current state
         setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
@@ -166,20 +172,20 @@ function HomePage() {
         method: "POST",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(pollData),
       });
       if (response.ok) {
         // After successful post submission
-        window.location.reload();  // This reloads the entire page
-      } 
+        window.location.reload(); // This reloads the entire page
+      }
       if (!response.ok) {
-        throw new Error('Failed to create poll');
+        throw new Error("Failed to create poll");
       }
       const newPoll = await response.json();
       console.log("Poll created successfully", newPoll);
-      setPosts(prevPosts => [newPoll, ...prevPosts]);
+      setPosts((prevPosts) => [newPoll, ...prevPosts]);
     } catch (error) {
       console.error("Error creating poll:", error.message);
     }
@@ -188,22 +194,27 @@ function HomePage() {
   const handleVote = async (pollId, optionText) => {
     console.log("Attempting to vote on poll:", pollId); // Debug: Check the poll ID when attempting to vote
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/polls/${pollId}/vote`, {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ text: optionText }),
-      });
-  
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/polls/${pollId}/vote`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ text: optionText }),
+        }
+      );
+
       console.log("Response status:", response.status); // Debug: Check the response status
-  
+
       if (response.ok) {
         const updatedPoll = await response.json();
         console.log("Vote successful, updated poll:", updatedPoll); // Debug: Log the updated poll
-        setPolls(prevPolls =>
-          prevPolls.map(poll => poll._id === updatedPoll._id ? updatedPoll : poll)
+        setPolls((prevPolls) =>
+          prevPolls.map((poll) =>
+            poll._id === updatedPoll._id ? updatedPoll : poll
+          )
         );
       } else {
         const error = await response.text();
@@ -214,57 +225,63 @@ function HomePage() {
       console.error("Error in handleVote:", error.message); // Debug: Log errors in the catch block
     }
   };
-  
 
   const updatePostLikes = (updatedPost) => {
     // Assume updatedPost contains the full updated post object, including its new likes count
-    setPosts(currentPosts =>
-      currentPosts.map(post =>
+    setPosts((currentPosts) =>
+      currentPosts.map((post) =>
         post._id === updatedPost._id ? updatedPost : post
       )
     );
   };
 
   const onCommentAdded = (updatedPost) => {
-    setPosts(currentPosts => 
-        currentPosts.map(post => 
-            post._id === updatedPost._id ? updatedPost : post
-        )
+    setPosts((currentPosts) =>
+      currentPosts.map((post) =>
+        post._id === updatedPost._id ? updatedPost : post
+      )
     );
-};
+  };
 
-return (
-  <div className="container-fluid">
-    <Navbar
-      user={currentUser}
-      isLoggedIn={isLoggedIn}
-      onLogout={handleLogout}
-      onSearchChange={setSearchInput}
-    />
-    {searchInput && <SearchComponent />}
-    <div className="row">
-      <div className="col-md-3">
-        {/* Left sidebar content */}
-      </div>
-      <div className="col-md-6">
-        <PostForm onPostSubmit={addNewPost} onPollSubmit={handlePollCreated} />
-        <PostList
-          posts={posts}
-          currentUser={currentUser}
-          onDeletePost={deletePost}
-          onVote={handleVote}
-          updatePostLikes={updatePostLikes}
-          onCommentAdded={onCommentAdded}
-        />
-        {polls.map(poll => (
-          <PollDisplay key={poll._id} poll={poll} onVote={handleVote} />
-        ))}
-      </div>
-      <div className="col-md-3">
-        {/* Right sidebar content */}
+  return (
+    <div className="container-fluid">
+      <Navbar
+        user={currentUser}
+        isLoggedIn={isLoggedIn}
+        onLogout={handleLogout}
+        onSearchChange={setSearchInput}
+      />
+      {searchInput && <SearchComponent />}
+      <div className="row">
+        <div className="col-md-3 text-center text-md-start">
+          <button
+            onClick={goToUserPolls}
+            className="btn btn-lg px-3 py-2 w-100 w-md-auto mb-3 mb-md-0 shadow-sm"
+          >
+            My Polls
+          </button>
+        </div>
+        <div className="col-md-6">
+          <PostForm
+            onPostSubmit={addNewPost}
+            onPollSubmit={handlePollCreated}
+          />
+          <PostList
+            posts={posts}
+            currentUser={currentUser}
+            onDeletePost={deletePost}
+            onVote={handleVote}
+            updatePostLikes={updatePostLikes}
+            onCommentAdded={onCommentAdded}
+          />
+          {polls.map((poll) => (
+            <PollDisplay key={poll._id} poll={poll} onVote={handleVote} />
+          ))}
+        </div>
+        <div className="col-md-3">{/* Right sidebar content */}</div>
       </div>
     </div>
-  </div>
-);
+  );
 }
+
 export default HomePage;
