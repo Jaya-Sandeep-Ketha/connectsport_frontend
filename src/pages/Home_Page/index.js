@@ -6,6 +6,7 @@ import PostList from "../post_item/postList";
 import PostForm from "../post_item/postForm";
 import SearchComponent from "../../Components/common/searchComponent";
 import PollDisplay from "../poll_item/index"; // Import the PollDisplay component
+import "../../Styles/HomePage/mypolls.css"
 
 function HomePage() {
   const navigate = useNavigate();
@@ -244,7 +245,7 @@ function HomePage() {
   };
 
   return (
-    <div className="container-fluid">
+    <div className="container-fluid p-0">
       <Navbar
         user={currentUser}
         isLoggedIn={isLoggedIn}
@@ -256,7 +257,7 @@ function HomePage() {
         <div className="col-md-3 text-center text-md-start">
           <button
             onClick={goToUserPolls}
-            className="btn btn-lg px-3 py-2 w-100 w-md-auto mb-3 mb-md-0 shadow-sm"
+            className="btn btn-lg px-3 py-2 w-100 w-md-auto mb-3 mb-md-0 shadow-sm btn-my-polls"
           >
             My Polls
           </button>

@@ -70,6 +70,7 @@ function PostForm({ onPostSubmit, onPollSubmit }) {
   };
 
   return (
+    <div className="postFormCard"> {/* Add this wrapper */}
     <form onSubmit={handleSubmit} className="formStyle">
       <select
         value={selectedSport}
@@ -180,6 +181,7 @@ function PostForm({ onPostSubmit, onPollSubmit }) {
         {showPollCreator ? "Post Poll" : "Post"}
       </button>
     </form>
+    </div>
   );
 }
 

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import SocialButtons from "../../Components/common/socialButtons";
 import { useAuth } from "../../services/useAuth"; // Ensure the path is correct
+import 'bootstrap/dist/css/bootstrap.min.css'; 
+import { Card, Button, Form, FormControl } from "react-bootstrap";
 
 function Post({
   _id,
@@ -123,124 +125,50 @@ function Post({
   };
 
   return (
-    <div style={postStyle}>
+    <Card className="mb-4 shadow-sm">
       {shared && shared.length > 0 && (
-        <p style={{ marginBottom: "10px", color: "#555" }}>
-          {shared[0].userId} shared this post.
-        </p>
+        <Card.Header>
+          <small className="text-muted">{shared[0].userId} shared this post.</small>
+        </Card.Header>
       )}
-      <div className="post-header">
-        <h4>{author}</h4>
-        <p>{content}</p>
-        {/* <button onClick={() => setShowOptions(!showOptions)} style={optionButtonStyle}>...</button>
-        {showOptions && (
-          <div style={optionsStyle}>
-            <button onClick={() => deletePost(_id)} style={deleteButtonStyle}>Delete</button>
-          </div>
-        )} */}
-      </div>
-      {image && image.url && (
-        <img src={image.url} alt="Post" style={imageStyle} />
-      )}
-      <SocialButtons
-        onLike={handleLike}
-        likesCount={likesCount}
-        onCommentToggle={() => setShowComments(!showComments)}
-        commentsCount={comments.length}
-        onShare={() => sharePost(_id)}
-      />
+      <Card.Body>
+        <Card.Title>{author}</Card.Title>
+        <Card.Text>{content}</Card.Text>
+        {image && image.url && (
+          <Card.Img variant="top" src={image.url} alt="Post" />
+        )}
+        <SocialButtons
+          onLike={handleLike}
+          likesCount={likesCount}
+          onCommentToggle={() => setShowComments(!showComments)}
+          commentsCount={comments.length}
+          onShare={() => sharePost(_id)}
+        />
+      </Card.Body>
       {showComments && (
-        <div
-          style={{
-            maxHeight: "200px",
-            overflowY: "auto",
-            marginTop: "10px",
-            borderTop: "1px solid #ccc",
-          }}
-        >
-          {comments.map((comment, index) => (
-            <p key={index}>
-              <strong>{comment.commenter}:</strong> {comment.content}
-            </p>
-          ))}
-          <form onSubmit={handleCommentSubmit} style={formStyle}>
-            <input
-              type="text"
-              value={commentText}
-              onChange={(e) => setCommentText(e.target.value)}
-              placeholder="Write a comment..."
-              style={inputStyle}
-            />
-            <button type="submit" style={buttonStyle}>
-              Comment
-            </button>
-          </form>
-        </div>
+        <Card.Footer>
+          <div className="comments-section">
+            {localComments.map((comment, index) => (
+              <Card.Text key={index}>
+                <strong>{comment.commenter}:</strong> {comment.content}
+              </Card.Text>
+            ))}
+            <Form inline onSubmit={handleCommentSubmit}>
+              <FormControl
+                type="text"
+                value={commentText}
+                onChange={(e) => setCommentText(e.target.value)}
+                placeholder="Write a comment..."
+                className="mr-2 flex-grow-1"
+              />
+              <Button variant="primary" type="submit">Comment</Button>
+            </Form>
+          </div>
+        </Card.Footer>
       )}
-      {error && <p style={{ color: "red" }}>{error}</p>}
-    </div>
+      {error && <Card.Footer className="text-danger">{error}</Card.Footer>}
+    </Card>
   );
 }
-
-const postStyle = {
-  border: "1px solid #ccc",
-  padding: "10px",
-  marginBottom: "10px",
-  backgroundColor: "#f9f9f9", // Light background for the post
-};
-
-const imageStyle = {
-  maxWidth: "100%",
-  height: "auto",
-  marginTop: "10px",
-};
-
-const formStyle = {
-  display: "flex",
-  marginTop: "10px",
-};
-
-const inputStyle = {
-  flexGrow: 1, // Make input take up the available space
-  marginRight: "8px", // Spacing between input and button
-  padding: "8px",
-  border: "1px solid #ddd", // Lighter border for the input
-  borderRadius: "20px", // Rounded corners for the input
-};
-
-const buttonStyle = {
-  padding: "8px 16px",
-  background: "#007bff", // Bootstrap primary button color
-  color: "white",
-  border: "none",
-  borderRadius: "20px", // Rounded corners for the button
-  cursor: "pointer",
-};
-
-const optionButtonStyle = {
-  // Style for your option button
-  cursor: "pointer",
-  float: "right", // Position the button to the right
-  border: "none",
-  background: "none",
-};
-
-const optionsStyle = {
-  // Style for the options dropdown
-  position: "absolute",
-  right: "10px",
-  backgroundColor: "#f9f9f9",
-  border: "1px solid #ccc",
-  borderRadius: "5px",
-  padding: "5px",
-};
-
-const deleteButtonStyle = {
-  // Style for your delete button within the dropdown
-  background: "none",
-  border: "none",
-  color: "red",
-  cursor: "pointer",
-};
 
 export default Post;

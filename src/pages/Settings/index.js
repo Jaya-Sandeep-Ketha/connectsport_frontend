@@ -148,7 +148,7 @@ const SettingsPage = () => {
   };
 
   return (
-    <div className="container-fluid">
+    <div className="container-fluid p-0">
       <Navbar
         user={currentUser}
         isLoggedIn={isLoggedIn}

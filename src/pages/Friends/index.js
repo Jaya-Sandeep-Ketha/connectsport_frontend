@@ -20,7 +20,9 @@ const App = () => {
   }, [filters]);
 
   return (
-    <div className="container-fluid">
+    <div className="container-fluid p-0">
+      {" "}
+      {/* Ensure this container is fluid and has no padding */}
       {/* Pass setSearchInput to manage search state */}
       <Navbar
         user={currentUser}
@@ -29,7 +31,6 @@ const App = () => {
         onSearchChange={setSearchInput} // Pass setSearchInput as a prop
       />
       {searchInput && <SearchComponent />}
-
       <div className="container my-5">
         <div className="row g-4">
           {" "}

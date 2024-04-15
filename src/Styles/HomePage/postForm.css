@@ -1,8 +1,16 @@
+.postFormCard {
+  background: #FFFFFF;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px; /* Space at the bottom of the card */
+}
+
 .formStyle {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 0px;
   }
   
   .textareaStyle {

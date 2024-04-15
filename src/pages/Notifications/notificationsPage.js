@@ -84,7 +84,7 @@ const NotificationsPage = () => {
   };
 
   return (
-    <div className={`container-fluid ${styles.container}`}>
+    <div className={`container-fluid ${styles.container} p-0`}>
       <Navbar
         user={currentUser}
         isLoggedIn={isLoggedIn}

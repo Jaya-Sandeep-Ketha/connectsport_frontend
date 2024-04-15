@@ -1,6 +1,6 @@
 /* Add a background image to the body */
 body {
-    background-image: url('../../assets//images/background.jpg'); /* Replace 'your-background-image.jpg' with the path to your background image */
+    background-image: url('../../assets/images/background.jpg'); /* Replace 'your-background-image.jpg' with the path to your background image */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -52,3 +52,4 @@ body {
 .col-md-3 {
     /* Add your styles for sidebar content here */
 }
+

@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { Button, Modal } from "react-bootstrap";
+import { Button, Modal, Card } from "react-bootstrap";
 import CreatePage from "./createPage"; // Ensure this path is correct
-import styles from "../../Styles/Pages/page.css"; // Ensure the path is correct
 import "bootstrap/dist/css/bootstrap.min.css";
 import Navbar from "../../Components/layout/navbar"; // Ensure this path is correct
 import SearchComponent from "../../Components/common/searchComponent";
 import { useAuth } from "../../services/useAuth";
+import styles from "../../Styles/Pages/page.css"; // Ensure the path is correctly configured
 
 const PagesList = () => {
   const [pages, setPages] = useState([]);
@@ -18,9 +18,7 @@ const PagesList = () => {
   useEffect(() => {
     const fetchPages = async () => {
       try {
-        const result = await axios.get(
-          `${process.env.REACT_APP_API_URL}/pages`
-        );
+        const result = await axios.get(`${process.env.REACT_APP_API_URL}/pages`);
         setPages(result.data);
       } catch (error) {
         console.error("There was an error fetching the pages:", error);
@@ -34,50 +32,52 @@ const PagesList = () => {
   const handleCloseModal = () => setShowModal(false);
 
   return (
-    <div className={`container-fluid ${styles.container}`}>
+    <div className={`container-fluid ${styles.containerFluid} p-0`}>
       <Navbar
         user={currentUser}
         isLoggedIn={isLoggedIn}
         onLogout={handleLogout}
-        onSearchChange={setSearchInput} // Pass setSearchInput as a prop
+        onSearchChange={setSearchInput}
       />
       {searchInput && <SearchComponent />}
-      <div className={`card ${styles.cardCustom}`}>
-        <div className={`card-body ${styles.cardBody}`}>
-          <div className="d-flex justify-content-between align-items-center">
-            <h3 className={`card-title ${styles.cardTitle}`}>Explore Pages</h3>
-            <Button
-              variant="primary"
-              onClick={handleShowModal}
-              className="mb-2" // You can remove mb-3 and add mb-2 for slightly less bottom margin if needed
-            >
-              Create Page
-            </Button>
-          </div>
-          <Modal show={showModal} onHide={handleCloseModal}>
-            <Modal.Header closeButton>
-              <Modal.Title>Create a New Page</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <CreatePage onClose={handleCloseModal} />
-            </Modal.Body>
-          </Modal>
+      <div className="row">
+        <div className="col-12">
+          <Card className="shadow-sm mb-4">
+            <Card.Body>
+              <div className="d-flex justify-content-between align-items-center">
+                <h3 className="mb-0">Explore Pages</h3>
+                <Button variant="outline-primary" onClick={handleShowModal}>
+                  Create Page
+                </Button>
+              </div>
+            </Card.Body>
+          </Card>
+        </div>
 
-          {/* Pages list */}
-          {pages.map((page) => (
-            <div key={page._id} className={styles.pageItem}>
-              <div className={styles.pageHeader}>
-                <h2 className={styles.pageTitle}>
-                  <Link to={`/pages/${page._id}`} className={styles.pageLink}>
+        {pages.map((page) => (
+          <div key={page._id} className="col-md-6 col-lg-4 mb-3">
+             <Card className={`h-100 shadow text-center ${styles.semiTransparentCard}`}>
+              <Card.Body>
+                <Card.Title>
+                  <Link to={`/pages/${page._id}`} className="stretched-link">
                     {page.title || "Untitled Page"}
                   </Link>
-                </h2>
-              </div>
-              <p className={styles.pageDescription}>{page.description}</p>
-            </div>
-          ))}
-        </div>
+                </Card.Title>
+                <Card.Text>{page.description}</Card.Text>
+              </Card.Body>
+            </Card>
+          </div>
+        ))}
       </div>
+
+      <Modal show={showModal} onHide={handleCloseModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Create a New Page</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <CreatePage onClose={handleCloseModal} />
+        </Modal.Body>
+      </Modal>
     </div>
   );
 };

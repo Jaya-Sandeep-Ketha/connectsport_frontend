@@ -60,78 +60,76 @@ const SearchResultsPage = () => {
     setShowProfileModal(false);
     setSelectedUser(null); // Clear the selected user
   };
-
-  return ( 
-  <div className="container-fluid">
-  <Navbar
-    user={currentUser}
-    isLoggedIn={isLoggedIn}
-    onLogout={handleLogout}
-    onSearchChange={setSearchInput} // Pass setSearchInput as a prop
-  />
-  {searchInput && <SearchComponent />}
-    <div className="search-results-page">
-      <h2>Search Results</h2>
-      <section>
-        <h3>Users</h3>
-        {results.users.length > 0 ? (
-          <ul>
-            {results.users.map((user) => (
-              <li key={user._id}>
-                <a
-                  href="#!"
-                  className="user-link"
-                  onClick={(e) => {
-                    e.preventDefault(); // Prevent the default anchor link behavior
-                    handleProfileClick(user);
-                  }}
-                >
-                  {user.firstName} {user.lastName}
-                </a>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="no-results">No user results found.</p>
-        )}
-      </section>
-      <section>
-        <h3>Pages</h3>
-        {results.pages.length > 0 ? (
-          <ul className="results-list">
-            {results.pages.map((page) => (
-              <li key={page._id} className="result-item">
-                <Link to={`/pages/${page._id}`}>{page.title}</Link>{" "}
-                {/* Adjust URL as needed */}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="no-results">No page results found.</p>
-        )}
-      </section>
-      <section>
-        <h3>Posts</h3>
-        {results.posts.length > 0 ? (
-          <div>
-            {results.posts.map((post) => (
-              <div key={post._id} className="post-item mb-3">
-                <p className="user-id">User ID: {post.userId}</p>
-                <p>{post.content}</p>
-                {post.image && post.image.url && (
-                  <img src={post.image.url} alt="Post" className="img-fluid" />
-                )}
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="no-results">No post results found.</p>
-        )}
-      </section>
-      {showProfileModal && selectedUser && (
-        <ProfileModal userId={selectedUser._id} onClose={handleCloseModal} />
-      )}
+  const SearchResultItem = ({ children, onClick }) => (
+    <div onClick={onClick} className="search-result-item">
+      {children}
     </div>
+  );
+
+
+  return (
+    <div className="container-fluid p-0">
+      <Navbar
+        user={currentUser}
+        isLoggedIn={isLoggedIn}
+        onLogout={handleLogout}
+        onSearchChange={setSearchInput}
+      />
+      {searchInput && <SearchComponent />}
+      <div className="search-results-page">
+        <h2>Search Results</h2>
+        <div className="search-section">
+          <h3>Users</h3>
+          <div className="results-list">
+            {results.users.length > 0 ? (
+              results.users.map((user) => (
+                <SearchResultItem key={user._id} onClick={() => handleProfileClick(user)}>
+                  {user.firstName} {user.lastName}
+                </SearchResultItem>
+              ))
+            ) : (
+              <p className="no-results">No user results found.</p>
+            )}
+          </div>
+        </div>
+        <div className="search-section">
+          <h3>Pages</h3>
+          <div className="results-list">
+            {results.pages.length > 0 ? (
+              results.pages.map((page) => (
+                <SearchResultItem key={page._id}>
+                  <Link to={`/pages/${page._id}`}>{page.title}</Link>
+                </SearchResultItem>
+              ))
+            ) : (
+              <p className="no-results">No page results found.</p>
+            )}
+          </div>
+        </div>
+        <div className="search-section">
+          <h3>Posts</h3>
+          <div className="results-list">
+            {results.posts.length > 0 ? (
+              results.posts.map((post) => (
+                <SearchResultItem key={post._id}>
+                  <div className="post-content">
+                    <p>User ID: {post.userId}</p>
+                    <p>{post.content}</p>
+                  </div>
+                  {post.image && post.image.url && (
+                    <img src={post.image.url} alt="Post" className="img-fluid" />
+                  )}
+                </SearchResultItem>
+              ))
+            ) : (
+              <p className="no-results">No post results found.</p>
+            )}
+          </div>
+        </div>
+        {showProfileModal && selectedUser && (
+          <ProfileModal userId={selectedUser._id} onClose={handleCloseModal} />
+        )}
+      </div>
     </div>
   );
 };

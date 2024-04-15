@@ -287,7 +287,7 @@ const PageDetail = () => {
               </Col>
             </Row>
             <Row className="my-2">
-              <Col xs={12} sm={6} md={4} lg={2}>
+              <Col xs={12}>
                 <Button
                   variant={isFollowing ? "success" : "primary"}
                   onClick={toggleFollow}
@@ -301,6 +301,7 @@ const PageDetail = () => {
                     <Button
                       variant="success"
                       onClick={() => setShowPaymentModal(true)}
+                      className="mx-2"
                     >
                       Donate
                     </Button>
@@ -311,7 +312,7 @@ const PageDetail = () => {
                     />
                   </>
                 )}
-                <Button variant="info" className="ml-2" onClick={handleShare}>
+                <Button variant="info" onClick={handleShare}>
                   Share
                 </Button>
               </Col>
@@ -333,7 +334,7 @@ const PageDetail = () => {
         {/* Posts Section */}
         <Row>
           <Col>
-            <h2 className={styles.postsHeading}>Posts</h2>
+            <h2 style={{ color: "#ffffff" }}>Posts</h2>
             {pageDetails.posts &&
               pageDetails.posts.map((post) => (
                 <Post

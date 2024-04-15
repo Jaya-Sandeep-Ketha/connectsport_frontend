@@ -1,95 +1,66 @@
+/* page.module.css */
 .container-fluid {
-  /* Your styles for the main container (if any) */
+  min-height: 100vh; /* Full viewport height */
+  background-image: url('../../assets/images/background_3.jpg'); /* Replace with your image path */
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed; /* Optional: for parallax-like effect */
+  position: relative; /* Needed for pseudo-element positioning */
+}
+
+/* Adding a white overlay with reduced opacity to lighten the image */
+.container-fluid::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.5); /* White with 50% opacity */
+  z-index: -1;
+}
+
+.semiTransparentCard {
+  background-color: rgba(255, 255, 255, 0.7); /* White with 50% opacity */
 }
 
 .cardCustom {
-  /* Your styles for the card (if any) */
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .cardBody {
-  /* Your styles for the card body (if any) */
+  padding: 20px;
 }
 
 .cardTitle {
-  /* Your styles for the card title (if any) */
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
 }
 
 .pageItem {
-  display: flex;
-  flex-direction: column;
-  border-bottom: 1px solid #e1e1e1;
-  padding: 20px;
-  transition: background-color 0.3s;
-}
-
-.pageItem:hover {
-  background-color: #f9f9f9;
+  margin-bottom: 15px;
 }
 
 .pageHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  font-size: 18px;
 }
 
 .pageTitle {
-  margin: 0;
-  color: #333;
-  font-size: 24px;
-  /* Make sure the title does not wrap unless necessary */
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-weight: bold;
 }
 
 .pageLink {
-  text-decoration: none;
   color: #007bff;
-  /* Handle long titles */
-  display: block;
-  max-width: 70%; /* Adjust this as needed */
+  text-decoration: none;
 }
 
-.pageActions {
-  display: flex;
-  gap: 10px; /* Adjust the space between buttons as needed */
-  flex-shrink: 0; /* Prevent the buttons from shrinking */
-}
-
-.followButton,
-.donateButton {
-  background-color: #007bff;
-  border: none;
-  padding: 10px 20px;
-  color: white;
-  cursor: pointer;
-  border-radius: 5px;
-  font-size: 16px;
-}
-
-.followButton:hover,
-.donateButton:hover {
-  background-color: #0056b3;
+.pageLink:hover {
+  text-decoration: underline;
 }
 
 .pageDescription {
   color: #666;
-  margin-top: 0.5rem; /* Spacing between title and description */
-}
-
-/* Responsive styles */
-@media (max-width: 768px) {
-  .pageHeader {
-    flex-wrap: wrap;
-  }
-  .pageTitle,
-  .pageLink {
-    /* Allow the title to wrap on smaller screens */
-    white-space: normal;
-    max-width: 100%;
-  }
-  .pageActions {
-    margin-top: 10px; /* Spacing between title and buttons on smaller screens */
-    justify-content: flex-end; /* Align buttons to the right on smaller screens */
-  }
 }
