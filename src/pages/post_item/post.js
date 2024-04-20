@@ -120,7 +120,7 @@ function Post({
       alert("Post shared successfully!");
     } catch (error) {
       console.error("Error sharing the post: ", error.message);
-      alert("Error sharing the post");
+      alert("Post already reshared");
     }
   };
 
@@ -128,7 +128,7 @@ function Post({
     <Card className="mb-4 shadow-sm">
       {shared && shared.length > 0 && (
         <Card.Header>
-          <small className="text-muted">{shared[0].userId} shared this post.</small>
+          <small className="text-muted">{shared[0].userId} reshared this post.</small>
         </Card.Header>
       )}
       <Card.Body>
