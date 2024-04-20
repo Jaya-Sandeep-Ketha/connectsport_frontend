@@ -322,19 +322,21 @@ const PageDetail = () => {
         {/* Posts Section */}
         <Row className="my-2">
           <Col xs={12}>
-            <Button
-              variant="primary"
-              onClick={() => setShowPostForm(!showPostForm)}
-            >
-              {showPostForm ? "Cancel" : "Create Post"}
-            </Button>
+            {currentUser === pageDetails.createdBy && (
+              <Button
+                variant="primary"
+                onClick={() => setShowPostForm(!showPostForm)}
+              >
+                {showPostForm ? "Cancel" : "Create Post"}
+              </Button>
+            )}
           </Col>
         </Row>
         {showPostForm && <PostForm onPostSubmit={handlePostSubmit} />}
         {/* Posts Section */}
         <Row>
           <Col>
-            <h2 style={{ color: "#ffffff" }}>Posts</h2>
+            <h2>Posts</h2>
             {pageDetails.posts &&
               pageDetails.posts.map((post) => (
                 <Post
